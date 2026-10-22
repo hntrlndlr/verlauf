@@ -1,4 +1,4 @@
-# Verlauf: PHQ-9, GAD-7 und WAI-SR (iPad, offline, verschlüsselt), Version 1.1.0
+# Verlauf: PHQ-9, GAD-7 und WAI-SR (iPad, offline, verschlüsselt), Version 1.2.0
 
 Eine kleine Web-App ohne Server. Sie läuft im Safari des iPads, speichert alles verschlüsselt im Browser-Speicher des Geräts und zeigt pro Kennung den Verlauf mit Hinweisen.
 
@@ -28,10 +28,18 @@ Eine kleine Web-App ohne Server. Sie läuft im Safari des iPads, speichert alles
 
 - **Standardmäßig aus.** Einschalten unter Einstellungen, Fragebögen.
 - **Intervall:** Einstellbar, bei jeder n-ten Messung einer Kennung (Voreinstellung 4, also bei der 4., 8., 12. Messung). Mit 1 wird bei jeder Messung gefragt.
-- **Ablauf:** Zuerst die Anleitung im Originalwortlaut, dann die 12 Aussagen mit den Stufen 1 (selten) bis 5 (immer). Die Texte stammen aus der deutschen Kurzform (Patientenversion), die du mir geschickt hast.
+- **Ablauf:** Zuerst die Anleitung im Originalwortlaut, dann die 12 Aussagen mit den Stufen 1 (selten) bis 5 (immer). Die Texte stammen aus der deutschen Kurzform (Patientenversion), die du mir geschickt hast. **Der Wortlaut ist auf einen männlichen Therapeuten angepasst** (aus „mein/e Therapeut/in“ wird „mein Therapeut“, aus „er/sie“ wird „er“, aus „ihrer/ihrem Therapeut/in“ wird „ihrem Therapeuten“). Das ist eine Abweichung vom Original. Prüfe mit den Rechteinhabern bzw. der Auswertungsanleitung, ob das für dich passt. Die Texte stehen im Skript im Block `Q.wai`.
 - **Auswertung:** Gesamtwert 12 bis 60 und Teilskalen Bindung, Aufgaben, Ziele (je 4 bis 20), als Verlauf und in der Tabelle. Es gibt bewusst **keine automatischen Warnhinweise**, weil ich keine belegten Grenzwerte kenne.
 - **Zuordnung der Teilskalen** (Bindung: 3, 5, 7, 9. Aufgaben: 1, 2, 10, 12. Ziele: 4, 6, 8, 11) habe ich aus dem Inhalt der Aussagen und meiner Erinnerung abgeleitet. Gleiche sie mit der Auswertungsanleitung des Instruments ab. Sie steht im Skript im Block `Q.wai.subs`.
 - **Rechte:** Der Wortlaut der Aussagen liegt dann im Programmcode. Bei einer öffentlichen Seite (z. B. GitHub Pages) kann ihn jeder lesen, der die Adresse kennt. Kläre mit den Rechteinhabern, ob deine Erlaubnis das abdeckt.
+
+## Detailansicht des Verlaufs
+
+- In der Kennung auf **Detailansicht** oder direkt ins Diagramm tippen. Es öffnet sich eine Vollbildansicht.
+- **Großes Diagramm** mit allen Werten beschriftet. Umschalten zwischen **gleichmäßigem Abstand** und **Abstand nach Datum** (zeigt Pausen zwischen den Sitzungen).
+- **Messung auswählen**: Punkt im Diagramm, Datum in der Tabelle, Knöpfe „Vorherige/Nächste“ oder Pfeiltasten. Angezeigt werden Gesamtwert, Stufe, Veränderung zur vorigen Messung und seit Beginn, bei der WAI-SR die Teilskalen, beim PHQ-9 die Antwort auf Frage 9.
+- **Antworten im Verlauf**: Tabelle mit jeder einzelnen Aussage über alle Messungen (dunkler = höhere Stufe). So sieht man, welche Items sich bewegen, nicht nur die Summe.
+- Schließen mit „Schließen“ oder Escape. Die Ansicht wird, wie alles andere, nach Leerlauf automatisch gesperrt.
 
 ## Datenschutz, kurz
 

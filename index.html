@@ -119,6 +119,27 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent);flex:none
 .hit{fill:transparent;cursor:pointer;outline:none}
 .hit:focus-visible{stroke:var(--accent);stroke-width:2}
 .tip{position:absolute;z-index:5;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:8px;padding:6px 10px;font-size:14px;line-height:1.35;transform:translate(-50%,-100%);white-space:nowrap}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.card-head h2{margin:0}
+.chart-open{cursor:pointer}
+.hint{font-size:14px;color:var(--ink2);margin:6px 0 0}
+.sel-ring{fill:none;stroke:var(--ink);stroke-width:2.5}
+.q9-line{color:var(--crit-ink);font-weight:600;margin:6px 0 0}
+.detail-back{position:fixed;inset:0;z-index:55;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.detail-wrap{max-width:1100px;margin:0 auto;padding:20px 20px 56px}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;margin:0 0 14px}
+.seg button{min-height:44px;padding:0 18px;border:0;background:var(--surface);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.grid-tbl{border-collapse:separate;border-spacing:0;font-size:15px;width:100%}
+.grid-tbl.ser-phq{--ser:var(--s-phq)} .grid-tbl.ser-gad{--ser:var(--s-gad)} .grid-tbl.ser-wai{--ser:var(--s-wai)}
+.grid-tbl th,.grid-tbl td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:center;background-color:var(--surface)}
+.grid-tbl .item{text-align:left;min-width:230px;max-width:340px;position:sticky;left:0;z-index:1;border-right:1px solid var(--line)}
+.grid-tbl .cell{font-variant-numeric:tabular-nums;font-weight:600;min-width:54px;background-image:linear-gradient(color-mix(in srgb,var(--ser) calc(var(--lvl,0) * 55%),transparent),color-mix(in srgb,var(--ser) calc(var(--lvl,0) * 55%),transparent))}
+.grid-tbl th.sel,.grid-tbl td.sel{box-shadow:inset 2px 0 0 var(--ink),inset -2px 0 0 var(--ink)}
+.grid-tbl .q9{color:var(--crit-ink)}
+.grid-tbl tr.tot td{font-weight:700;border-top:1.5px solid var(--line)}
+.grid-tbl tr.tot td.cell{background-image:none}
+.colbtn{border:0;background:none;color:inherit;font:inherit;font-weight:600;min-height:40px;padding:0 6px;cursor:pointer}
 .legend{font-size:14px;color:var(--ink2);margin-top:6px;display:flex;align-items:center;gap:8px}
 .legend svg{flex:none}
 
@@ -171,7 +192,7 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:28px 0}
 (() => {
 'use strict';
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const DB_NAME = 'verlauf-fragebogen';
 const KDF_ITER = 600000;
 const MIN_PASS = 10;
@@ -221,7 +242,7 @@ const Q = {
   },
   wai: {
     key: 'wai', short: 'WAI-SR', name: 'Arbeitsbeziehung (Allianz)', min: 12, max: 60,
-    instr: 'Im folgenden finden Sie eine Reihe von Aussagen, die sich auf Erfahrungen beziehen, die Menschen in ihrer Therapie oder mit ihrer/ihrem Therapeut/in machen können. Bitte entscheiden Sie bei jeder Aussage, inwieweit sie auf ihre Therapie zur Zeit zutrifft. Beurteilen Sie dies auf fünf Stufen von 1 = \u201eselten\u201c bis 5 = \u201eimmer\u201c.',
+    instr: 'Im folgenden finden Sie eine Reihe von Aussagen, die sich auf Erfahrungen beziehen, die Menschen in ihrer Therapie oder mit ihrem Therapeuten machen können. Bitte entscheiden Sie bei jeder Aussage, inwieweit sie auf ihre Therapie zur Zeit zutrifft. Beurteilen Sie dies auf fünf Stufen von 1 = \u201eselten\u201c bis 5 = \u201eimmer\u201c.',
     intro: 'Bitte entscheiden Sie, inwieweit die Aussage auf Ihre Therapie zur Zeit zutrifft.',
     options: [
       { v: 1, l: 'Selten' }, { v: 2, l: 'Manchmal' }, { v: 3, l: 'Öfters' }, { v: 4, l: 'Sehr oft' }, { v: 5, l: 'Immer' }
@@ -229,15 +250,15 @@ const Q = {
     items: [
       'Durch die Therapiestunden ist mir klarer geworden, wie ich mich verändern kann.',
       'Was ich in der Therapie mache, eröffnet mir neue Sichtweisen auf mein Problem.',
-      'Ich glaube mein/e Therapeut/in mag mich.',
-      'Mein/e Therapeut/in und ich arbeiten gemeinsam daran, Therapieziele zu setzen.',
-      'Mein/e Therapeut/in und ich achten einander.',
-      'Mein/e Therapeut/in und ich arbeiten auf Ziele hin über die wir uns einig sind.',
-      'Ich spüre, dass mein/e Therapeut/in mich schätzt.',
-      'Mein/e Therapeut/in und ich stimmen überein, woran es für mich wichtig ist zu arbeiten.',
-      'Ich spüre, dass mein/e Therapeut/in auch dann zu mir steht, wenn ich etwas tue, was er/sie nicht gutheißt.',
+      'Ich glaube mein Therapeut mag mich.',
+      'Mein Therapeut und ich arbeiten gemeinsam daran, Therapieziele zu setzen.',
+      'Mein Therapeut und ich achten einander.',
+      'Mein Therapeut und ich arbeiten auf Ziele hin über die wir uns einig sind.',
+      'Ich spüre, dass mein Therapeut mich schätzt.',
+      'Mein Therapeut und ich stimmen überein, woran es für mich wichtig ist zu arbeiten.',
+      'Ich spüre, dass mein Therapeut auch dann zu mir steht, wenn ich etwas tue, was er nicht gutheißt.',
       'Ich spüre, dass das, was ich in der Therapie tue, mir helfen wird, die von mir gewünschten Veränderungen zu erreichen.',
-      'Mein/e Therapeut/in und ich sind uns im Klaren darüber, welche Veränderungen gut für mich wären.',
+      'Mein Therapeut und ich sind uns im Klaren darüber, welche Veränderungen gut für mich wären.',
       'Ich glaube, dass es richtig ist, wie wir an meinem Problem arbeiten.'
     ],
     bands: [],
@@ -650,36 +671,53 @@ function confirmModal(title, text, okLabel, kind) {
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#modal-root').firstChild) cancelModal(); });
 
 /* ===================== Diagramm ===================== */
-function chartEl(k, pts) {
-  const q = Q[k], W = 760, H = 250, L = 38, R = 96, T = 18, B = 34;
+function chartEl(k, pts, opts) {
+  opts = opts || {};
+  const big = !!opts.big, byDate = !!opts.byDate;
+  const q = Q[k], W = 760, H = big ? 400 : 250, L = 38, R = 96, T = 24, B = 34;
   const pw = W - L - R, ph = H - T - B, max = q.max, min = q.min || 0, n = pts.length;
   const Y = v => T + ph - ((v - min) / (max - min)) * ph;
-  const X = i => n === 1 ? L + pw / 2 : L + 24 + (pw - 48) * i / (n - 1);
-  const first = pts[0].score, last = pts[n - 1].score;
+  const t0 = Date.parse(pts[0].ts), t1 = Date.parse(pts[n - 1].ts);
+  const X = i => n === 1 ? L + pw / 2 : (byDate && t1 > t0)
+    ? L + 24 + (pw - 48) * (Date.parse(pts[i].ts) - t0) / (t1 - t0)
+    : L + 24 + (pw - 48) * i / (n - 1);
+  const last = pts[n - 1].score;
   const wrap = h('div', { class: 'chart' });
-  const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, class: 'chart-svg', role: 'group',
-    'aria-label': `${q.short}-Verlauf: ${n} Messung${n === 1 ? '' : 'en'}, zuletzt ${last} Punkte${bandOf(k, last) ? ' (' + bandOf(k, last) + ')' : ''}. Die Werte stehen auch in der Tabelle darunter.` });
-  q.bands.forEach((b, i) => {
-    const lo = b[0], hi = i + 1 < q.bands.length ? q.bands[i + 1][0] : max;
+  const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, class: 'chart-svg' + (opts.onOpen ? ' chart-open' : ''), role: 'group',
+    'aria-label': `${q.short}-Verlauf: ${n} Messung${n === 1 ? '' : 'en'}, zuletzt ${last} Punkte${bandOf(k, last) ? ' (' + bandOf(k, last) + ')' : ''}. Die Werte stehen auch in der Tabelle darunter.`,
+    onclick: opts.onOpen ? (ev => { if (!ev.target.classList || !ev.target.classList.contains('hit')) opts.onOpen(); }) : null });
+  q.bands.forEach((bd, i) => {
+    const lo = bd[0], hi = i + 1 < q.bands.length ? q.bands[i + 1][0] : max;
     svg.append(s('rect', { x: L, y: Y(hi), width: pw, height: Y(lo) - Y(hi), class: i % 2 ? 'band-b' : 'band-a' }));
-    svg.append(s('text', { x: L + pw + 10, y: (Y(lo) + Y(hi)) / 2 + 4, class: 'ax-band' }, b[1]));
+    svg.append(s('text', { x: L + pw + 10, y: (Y(lo) + Y(hi)) / 2 + 4, class: 'ax-band' }, bd[1]));
   });
-  (q.ticks || q.bands.map(b => b[0]).concat([max])).forEach(t => {
+  (q.ticks || q.bands.map(bd => bd[0]).concat([max])).forEach(t => {
     svg.append(s('line', { x1: L, x2: L + pw, y1: Y(t), y2: Y(t), class: t === min ? 'axis' : 'grid' }));
     svg.append(s('text', { x: L - 8, y: Y(t) + 4, class: 'ax-y', 'text-anchor': 'end' }, String(t)));
   });
-  const step = Math.max(1, Math.ceil(n / Math.max(1, Math.floor(pw / 62))));
-  pts.forEach((p, i) => { if (i % step === 0 || i === n - 1) svg.append(s('text', { x: X(i), y: H - B + 20, class: 'ax-x', 'text-anchor': 'middle' }, fmtShort(p.ts))); });
+  // Datumsbeschriftung von rechts nach links, nur wenn genug Platz ist
+  let rightX = Infinity;
+  for (let i = n - 1; i >= 0; i--) {
+    if (i === n - 1 || rightX - X(i) >= 52) {
+      svg.append(s('text', { x: X(i), y: H - B + 20, class: 'ax-x', 'text-anchor': 'middle' }, fmtShort(pts[i].ts)));
+      rightX = X(i);
+    }
+  }
   const guide = s('line', { x1: 0, x2: 0, y1: T, y2: T + ph, class: 'guide', visibility: 'hidden' });
   svg.append(guide);
-  if (n > 1) svg.append(s('path', { d: pts.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p.score).toFixed(1)}`).join(' '), fill: 'none', 'stroke-width': 2, 'stroke-linejoin': 'round', class: 'line-' + k }));
+  if (n > 1) svg.append(s('path', { d: pts.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p.score).toFixed(1)}`).join(' '), fill: 'none', 'stroke-width': big ? 2.5 : 2, 'stroke-linejoin': 'round', class: 'line-' + k }));
   const flagged = pts.map(p => k === 'phq' && p.rec.phq && Number.isInteger(p.rec.phq[8]) && p.rec.phq[8] > 0);
   pts.forEach((p, i) => {
+    if (opts.selected === i) svg.append(s('circle', { cx: X(i), cy: Y(p.score), r: big ? 14 : 12, class: 'sel-ring' }));
     if (flagged[i]) svg.append(s('circle', { cx: X(i), cy: Y(p.score), r: 9.5, class: 'ring' }));
-    svg.append(s('circle', { cx: X(i), cy: Y(p.score), r: 4.75, class: 'pt pt-' + k }));
+    svg.append(s('circle', { cx: X(i), cy: Y(p.score), r: big ? 5.5 : 4.75, class: 'pt pt-' + k }));
   });
-  [0, n - 1].filter((v, i, a) => a.indexOf(v) === i).forEach(i => {
-    svg.append(s('text', { x: X(i), y: Y(pts[i].score) - (flagged[i] ? 16 : 11), class: 'val', 'text-anchor': 'middle' }, String(pts[i].score)));
+  const labelIdx = big && n <= 30 ? pts.map((_, i) => i) : [0, n - 1].filter((v, i, arr) => arr.indexOf(v) === i);
+  let lastLx = -1e9;
+  labelIdx.forEach(i => {
+    if (X(i) - lastLx < 24 && i !== n - 1) return;
+    lastLx = X(i);
+    svg.append(s('text', { x: X(i), y: Y(pts[i].score) - (flagged[i] ? 16 : opts.selected === i ? 19 : 11), class: 'val', 'text-anchor': 'middle' }, String(pts[i].score)));
   });
   const tip = h('div', { class: 'tip', hidden: true });
   const showTip = i => {
@@ -696,14 +734,79 @@ function chartEl(k, pts) {
   pts.forEach((p, i) => {
     svg.append(s('circle', { cx: X(i), cy: Y(p.score), r: 22, class: 'hit', tabindex: '0', role: 'img',
       'aria-label': `${fmtDate(p.ts)}: ${q.short} ${p.score}${bandOf(k, p.score) ? ', ' + bandOf(k, p.score) : ''}${flagged[i] ? ', Frage 9 positiv' : ''}`,
-      onpointerenter: () => showTip(i), onclick: () => showTip(i), onfocus: () => showTip(i),
+      onpointerenter: () => showTip(i),
+      onclick: () => { if (opts.onSelect) opts.onSelect(i); else showTip(i); },
+      onfocus: () => showTip(i),
       onpointerleave: ev => { if (ev.pointerType === 'mouse') hideTip(); }, onblur: hideTip }));
   });
   wrap.append(svg, tip);
   if (flagged.some(Boolean)) wrap.append(h('div', { class: 'legend' },
     (() => { const m = s('svg', { width: 22, height: 22, viewBox: '0 0 22 22', 'aria-hidden': 'true' }, s('circle', { cx: 11, cy: 11, r: 9.5, class: 'ring' }), s('circle', { cx: 11, cy: 11, r: 4.75, class: 'pt pt-' + k })); return m; })(),
     'Roter Ring: Frage 9 (Gedanken an Tod oder Selbstverletzung) war positiv'));
+  if (opts.onOpen) wrap.append(h('div', { class: 'hint' }, 'Ins Diagramm tippen für die Detailansicht'));
   return wrap;
+}
+
+/* ---- Detailansicht (Vollbild) ---- */
+function openDetail(k, ser) {
+  const q = Q[k];
+  const mn = q.options[0].v, mx = q.options[q.options.length - 1].v;
+  let sel = ser.length - 1, byDate = false;
+  const body = h('div', { class: 'detail-wrap' });
+  const back = h('div', { class: 'detail-back', role: 'dialog', 'aria-modal': 'true', 'aria-label': `${q.short}: Detailansicht` }, body);
+  const onKey = ev => {
+    if (!back.isConnected) { document.removeEventListener('keydown', onKey); return; }
+    if (ev.key === 'ArrowLeft' && sel > 0) { sel--; draw(); } else if (ev.key === 'ArrowRight' && sel < ser.length - 1) { sel++; draw(); }
+  };
+  document.addEventListener('keydown', onKey);
+  const draw = () => {
+    const p = ser[sel], prev = sel > 0 ? ser[sel - 1] : null, base = ser[0];
+    const bnd = bandOf(k, p.score), subs = subScores(p.rec, k);
+    const v9 = k === 'phq' && p.rec.phq ? p.rec.phq[8] : undefined;
+    const seg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Zeitachse' },
+      h('button', { type: 'button', id: 'axis-even', 'aria-pressed': String(!byDate), onclick: () => { byDate = false; draw(); } }, 'Gleichmäßig'),
+      h('button', { type: 'button', id: 'axis-date', 'aria-pressed': String(byDate), onclick: () => { byDate = true; draw(); } }, 'Nach Datum'));
+    const selCard = h('div', { class: 'card', id: 'detail-sel' },
+      h('div', { class: 'card-head' },
+        h('h2', null, fmtDate(p.ts) + (p.rec.src === 'therapist' ? ' (Papier)' : '')),
+        h('div', { style: { display: 'flex', gap: '8px' } },
+          h('button', { class: 'btn sm', type: 'button', id: 'sel-prev', disabled: sel === 0 ? true : null, onclick: () => { sel--; draw(); } }, '‹ Vorherige'),
+          h('button', { class: 'btn sm', type: 'button', id: 'sel-next', disabled: sel === ser.length - 1 ? true : null, onclick: () => { sel++; draw(); } }, 'Nächste ›'))),
+      h('div', { class: 'stat' }, h('span', { class: 'big' }, String(p.score)),
+        bnd ? h('span', null, bnd) : h('span', null, `von ${q.min} bis ${q.max}`),
+        prev ? h('span', null, `${signed(p.score - prev.score)} zur Messung vom ${fmtDate(prev.ts)}`) : null,
+        sel > 0 ? h('span', null, `${signed(p.score - base.score)} seit Beginn`) : null),
+      subs ? h('p', { class: 'sub' }, Object.entries(subs).map(([nm, v]) => `${nm} ${v} von 20`).join(' · ')) : null,
+      v9 !== undefined ? h('p', { class: v9 > 0 ? 'q9-line' : 'sub' },
+        'Frage 9: ' + (v9 === null ? 'nicht beantwortet' : v9 > 0 ? '! ' + FREQ[v9].l : 'überhaupt nicht')) : null);
+    const head = h('tr', null, h('th', { class: 'item' }, 'Aussage'), ser.map((c, i) => h('th', { class: i === sel ? 'sel' : '' },
+      h('button', { type: 'button', class: 'colbtn', 'aria-label': `Messung vom ${fmtDate(c.ts)} auswählen`, onclick: () => { sel = i; draw(); } }, fmtShort(c.ts)))));
+    const rows = q.items.map((txt, idx) => h('tr', null, h('td', { class: 'item' }, `${idx + 1}. ${txt}`), ser.map((c, i) => {
+      const v = c.rec[k][idx];
+      const lvl = Number.isInteger(v) ? (v - mn) / (mx - mn) : 0;
+      const opt = q.options.find(o => o.v === v);
+      const crit = k === 'phq' && idx === 8 && v > 0;
+      return h('td', { class: 'cell' + (i === sel ? ' sel' : '') + (crit ? ' q9' : ''), style: '--lvl:' + lvl.toFixed(2), title: opt ? opt.l : 'übersprungen' },
+        Number.isInteger(v) ? (crit ? '! ' : '') + v : '–');
+    })));
+    const totals = [h('tr', { class: 'tot' }, h('td', { class: 'item' }, 'Gesamtwert'), ser.map((c, i) => h('td', { class: 'cell' + (i === sel ? ' sel' : '') }, String(c.score))))];
+    if (q.subs) for (const nm of Object.keys(q.subs)) totals.push(h('tr', { class: 'tot' }, h('td', { class: 'item' }, `${nm} (4 bis 20)`), ser.map((c, i) => h('td', { class: 'cell' + (i === sel ? ' sel' : '') }, String(subScores(c.rec, k)[nm])))));
+    const lo = q.options[0], hi = q.options[q.options.length - 1];
+    body.replaceChildren(
+      h('div', { class: 'top' }, h('div', { class: 'grow' }, h('h1', null, `${q.short} · ${q.name}`), h('div', { class: 'sub' }, `${ser.length} Messung${ser.length === 1 ? '' : 'en'}, ${fmtDate(ser[0].ts)} bis ${fmtDate(ser[ser.length - 1].ts)}`)),
+        h('button', { class: 'btn primary', type: 'button', id: 'detail-close', onclick: closeModal }, 'Schließen')),
+      seg,
+      h('div', { class: 'card' }, chartEl(k, ser, { big: true, byDate, selected: sel, onSelect: i => { sel = i; draw(); } }),
+        h('p', { class: 'hint' }, 'Punkt antippen, um eine Messung auszuwählen. Mit den Pfeiltasten springen Sie zwischen den Messungen.')),
+      selCard,
+      h('div', { class: 'card' }, h('h2', null, 'Antworten im Verlauf'),
+        h('p', { class: 'sub small' }, `Zahl = Antwortstufe (${lo.v} = ${lo.l} bis ${hi.v} = ${hi.l}), dunkler = höhere Stufe. Ein Datum antippen wählt die Messung aus.`),
+        h('div', { class: 'scroll-x' }, h('table', { class: 'grid-tbl ser-' + k }, h('thead', null, head), h('tbody', null, rows, totals)))));
+  };
+  closeModal();
+  $('#modal-root').append(back);
+  draw();
+  setTimeout(() => { const c = $('#detail-close'); if (c && !back.contains(document.activeElement)) c.focus(); }, 30);
 }
 document.addEventListener('pointerdown', e => { if (!e.target.closest || !e.target.closest('.chart')) document.querySelectorAll('.chart .tip').forEach(t => { t.hidden = true; }); }, true);
 
@@ -902,12 +1005,12 @@ function viewPatient() {
   const sers = { phq: a.series.phq, gad: a.series.gad, wai: recs.filter(r => recScore(r, 'wai') !== null).map(r => ({ rec: r, score: recScore(r, 'wai'), ts: r.ts })) };
   const cards = ['phq', 'gad', 'wai'].filter(k => sers[k].length).map(k => {
     const ser = sers[k], last = ser[ser.length - 1].score, base = ser[0].score, prev = ser.length > 1 ? ser[ser.length - 2].score : null;
-    return h('div', { class: 'card' }, h('h2', null, `${Q[k].short} · ${Q[k].name}`),
+    return h('div', { class: 'card' }, h('div', { class: 'card-head' }, h('h2', null, `${Q[k].short} · ${Q[k].name}`), h('button', { class: 'btn sm', type: 'button', id: 'detail-' + k, onclick: () => openDetail(k, ser) }, 'Detailansicht')),
       h('div', { class: 'stat' }, h('span', { class: 'big' }, String(last)), bandOf(k, last) ? h('span', null, bandOf(k, last)) : h('span', null, `von ${Q[k].min} bis ${Q[k].max}`),
         k === 'wai' ? h('span', null, Object.entries(subScores(ser[ser.length - 1].rec, 'wai')).map(([nm, v]) => `${nm} ${v} von 20`).join(' · ')) : null,
         ser.length > 1 ? h('span', null, `${signed(last - base)} seit Beginn`) : null,
         prev !== null ? h('span', null, `${signed(last - prev)} zur letzten Messung`) : null),
-      chartEl(k, ser));
+      chartEl(k, ser, { onOpen: () => openDetail(k, ser) }));
   });
   const scoreCell = (r, k) => {
     const sc = recScore(r, k);
