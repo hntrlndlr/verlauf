@@ -1,0 +1,16 @@
+{
+  "name": "Verlauf – Fragebögen",
+  "short_name": "Verlauf",
+  "description": "PHQ-9 und GAD-7 pro Sitzung, verschlüsselt und lokal gespeichert.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f5f4",
+  "theme_color": "#1f5c5f",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,1132 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Verlauf</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#1f5c5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Verlauf">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+:root{
+  color-scheme: light dark;
+  --serif: ui-serif, "New York", "Iowan Old Style", Georgia, serif;
+  --sans: system-ui, -apple-system, "SF Pro Text", "Segoe UI", sans-serif;
+  --bg:#f3f5f4; --surface:#fcfcfb; --ink:#14232a; --ink2:#44545b; --muted:#65747a;
+  --line:#dde3e1; --line2:#c3cbc9;
+  --accent:#1f5c5f; --accent-ink:#ffffff; --accent-soft:#e2eeed;
+  --crit:#d03b3b; --crit-bg:#fdeceb; --crit-ink:#8a1c1c;
+  --warn:#e0a100; --warn-bg:#fff4d9; --warn-ink:#6b4300;
+  --good-bg:#e7f3e7; --good-ink:#006300;
+  --s-phq:#2a78d6; --s-gad:#eb6834;
+  --band:#f0efec; --grid:#e1e0d9; --axis:#c3c2b7;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0e1213; --surface:#1a1a19; --ink:#eef1f0; --ink2:#c3c9c7; --muted:#9aa4a7;
+    --line:#2c2f2e; --line2:#3d4241;
+    --accent:#6cc2c5; --accent-ink:#0a1b1c; --accent-soft:#1c2e2f;
+    --crit:#d03b3b; --crit-bg:#3a1c1c; --crit-ink:#ffb0ac;
+    --warn:#fab219; --warn-bg:#3a2f10; --warn-ink:#f6cf72;
+    --good-bg:#12301a; --good-ink:#7bd47b;
+    --s-phq:#3987e5; --s-gad:#d95926;
+    --band:#222221; --grid:#2c2c2a; --axis:#383835;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 var(--sans);min-height:100vh;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2;margin:0}
+h1{font-size:30px} h2{font-size:22px} h3{font-size:18px}
+p{margin:0 0 .6em}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) 56px max(20px,env(safe-area-inset-left))}
+.top{display:flex;align-items:center;gap:12px;margin:8px 0 22px;flex-wrap:wrap}
+.top .grow{flex:1;min-width:0}
+.sub{color:var(--ink2);font-size:15px}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:10px;border:1.5px solid var(--line2);background:var(--surface);font-weight:600;cursor:pointer;white-space:nowrap}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{background:var(--crit-bg);border-color:var(--crit);color:var(--crit-ink)}
+.btn.quiet{border-color:transparent;background:transparent;color:var(--ink2)}
+.btn.sm{min-height:40px;padding:0 14px;font-size:15px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px}
+.card h2{margin-bottom:4px}
+.field{display:block;margin:0 0 14px}
+.field>span{display:block;font-weight:600;margin-bottom:6px}
+.field small{display:block;color:var(--muted);margin-top:5px;font-size:14px}
+input[type=text],input[type=password],input[type=search],input[type=number],input[type=date],select{width:100%;min-height:48px;padding:0 14px;border:1.5px solid var(--line2);border-radius:10px;background:var(--bg);font-size:17px}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent);flex:none;margin:0}
+.check{display:flex;gap:12px;align-items:flex-start;margin:0 0 12px;cursor:pointer}
+.check small{display:block;color:var(--muted);font-size:14px}
+.err{color:var(--crit-ink);background:var(--crit-bg);border:1px solid var(--crit);border-radius:10px;padding:10px 14px;margin:0 0 14px;font-size:15px}
+.note{background:var(--warn-bg);color:var(--warn-ink);border:1px solid var(--warn);border-radius:10px;padding:12px 14px;margin:0 0 16px;font-size:15px}
+.note .btn{margin-top:10px}
+.center{max-width:520px;margin:0 auto}
+.lockbox{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:32px 20px}
+
+.controls{display:flex;gap:12px;margin:0 0 14px;flex-wrap:wrap}
+.controls .grow{flex:1;min-width:220px}
+.controls select{width:auto;min-width:210px}
+.list{display:flex;flex-direction:column;gap:10px}
+.prow{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;cursor:pointer;min-height:72px}
+.prow:hover{border-color:var(--line2)}
+.prow .id{font:600 21px/1.2 var(--serif)}
+.prow .meta{flex:1;min-width:0}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;gap:5px;align-items:center;font-size:15px;padding:3px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);white-space:nowrap}
+.chip i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chip.c-phq i{background:var(--s-phq)} .chip.c-gad i{background:var(--s-gad)}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;padding:4px 10px;border-radius:8px;white-space:nowrap}
+.badge b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;font-size:12px;line-height:1}
+.badge.crit{background:var(--crit-bg);color:var(--crit-ink);border:1px solid var(--crit)} .badge.crit b{background:var(--crit);color:#fff}
+.badge.warn{background:var(--warn-bg);color:var(--warn-ink);border:1px solid var(--warn)} .badge.warn b{background:var(--warn);color:#2a1a00}
+.badge.info{background:var(--accent-soft);color:var(--ink)} .badge.info b{background:var(--accent);color:var(--accent-ink)}
+.badge.good{background:var(--good-bg);color:var(--good-ink)} .badge.good b{background:var(--good-ink);color:var(--good-bg)}
+.empty{text-align:center;padding:40px 20px;color:var(--ink2)}
+
+.flags{display:flex;flex-direction:column;gap:10px}
+.flag{display:flex;gap:12px;align-items:flex-start}
+.flag .badge{flex:none;margin-top:1px}
+.flag p{margin:0}
+
+.stat{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;margin:6px 0 10px;color:var(--ink2);font-size:15px}
+.stat .big{font:600 34px/1 var(--serif);color:var(--ink)}
+.chart{position:relative}
+.chart-svg{display:block;width:100%;height:auto;overflow:visible;touch-action:manipulation}
+.band-a{fill:transparent} .band-b{fill:var(--band)}
+.grid{stroke:var(--grid);stroke-width:1} .axis{stroke:var(--axis);stroke-width:1.5}
+.ax-y,.ax-x,.ax-band{fill:var(--muted);font:11.5px var(--sans)}
+.val{fill:var(--ink);font:600 13px var(--sans)}
+.line-phq{stroke:var(--s-phq)} .line-gad{stroke:var(--s-gad)}
+.pt-phq{fill:var(--s-phq)} .pt-gad{fill:var(--s-gad)}
+.pt{stroke:var(--surface);stroke-width:2}
+.ring{fill:none;stroke:var(--crit);stroke-width:2}
+.guide{stroke:var(--line2);stroke-width:1;stroke-dasharray:3 3}
+.hit{fill:transparent;cursor:pointer;outline:none}
+.hit:focus-visible{stroke:var(--accent);stroke-width:2}
+.tip{position:absolute;z-index:5;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:8px;padding:6px 10px;font-size:14px;line-height:1.35;transform:translate(-50%,-100%);white-space:nowrap}
+.legend{font-size:14px;color:var(--ink2);margin-top:6px;display:flex;align-items:center;gap:8px}
+.legend svg{flex:none}
+
+.tbl{width:100%;border-collapse:collapse;font-size:16px}
+.tbl th{font-weight:600;text-align:left;color:var(--ink2);font-size:14px;padding:6px 10px;border-bottom:1.5px solid var(--line2)}
+.tbl td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl td.num{font-variant-numeric:tabular-nums}
+.tbl .q9{color:var(--crit-ink);font-weight:600}
+.scroll-x{overflow-x:auto}
+
+.modal-back{position:fixed;inset:0;background:rgba(10,18,20,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;overflow-y:auto}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto}
+.modal h2{margin-bottom:12px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:12px;font-size:16px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Fragebogen-Ansicht */
+.flow{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg)}
+.prog{height:6px;background:var(--line)} .prog i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.flow-top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:max(14px,env(safe-area-inset-top)) 20px 0;max-width:760px;width:100%;margin:0 auto}
+.flow-main{flex:1;display:flex;flex-direction:column;justify-content:center;width:100%;max-width:760px;margin:0 auto;padding:20px 20px 40px}
+.flow-kicker{color:var(--ink2);font-size:15px;margin-bottom:6px}
+.flow-intro{color:var(--ink2);font-size:16px;margin-bottom:18px}
+.q-text{font:600 clamp(24px,3.6vw,33px)/1.3 var(--serif);margin:0 0 26px}
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{display:flex;align-items:center;gap:18px;width:100%;min-height:68px;padding:12px 20px;text-align:left;background:var(--surface);border:1.5px solid var(--line2);border-radius:14px;font-size:19px;cursor:pointer}
+.opt[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.dots{display:inline-flex;gap:5px;flex:none;min-width:58px}
+.dots i{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--muted);display:inline-block}
+.dots i.on{background:var(--accent);border-color:var(--accent)}
+.flow-foot{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:12px}
+.crisis{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:15px;color:var(--ink2);margin:22px 0 0;text-align:left}
+.thanks h1{font-size:34px;margin-bottom:10px}
+hr.sep{border:0;border-top:1px solid var(--line);margin:28px 0}
+@media (max-width:640px){
+  h1{font-size:26px}
+  .prow{flex-wrap:wrap}
+  .controls select{width:100%}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="modal-root"></div>
+<noscript>Diese App benötigt JavaScript.</noscript>
+<script>
+(() => {
+'use strict';
+
+const VERSION = '1.0.0';
+const DB_NAME = 'verlauf-fragebogen';
+const KDF_ITER = 600000;
+const MIN_PASS = 10;
+const HIDDEN_LOCK_MS = 60 * 1000;
+const FLOW_IDLE_MS = 15 * 60 * 1000;
+const CRISIS_TEXT = 'Wenn Sie sich in einer akuten Krise befinden, sagen Sie es bitte sofort Ihrer Therapeutin oder Ihrem Therapeuten. Notruf: 112. TelefonSeelsorge (kostenfrei, rund um die Uhr): 0800 111 0 111 oder 0800 111 0 222.';
+
+/* ===================== Fragebögen ===================== */
+const FREQ = [
+  { v: 0, l: 'Überhaupt nicht' },
+  { v: 1, l: 'An einzelnen Tagen' },
+  { v: 2, l: 'An mehr als der Hälfte der Tage' },
+  { v: 3, l: 'Beinahe jeden Tag' }
+];
+const Q = {
+  phq: {
+    key: 'phq', short: 'PHQ-9', name: 'Depressive Beschwerden', max: 27,
+    intro: 'Wie oft fühlten Sie sich im Verlauf der letzten 2 Wochen durch die folgenden Beschwerden beeinträchtigt?',
+    options: FREQ,
+    items: [
+      'Wenig Interesse oder Freude an Ihren Tätigkeiten',
+      'Niedergeschlagenheit, Schwermut oder Hoffnungslosigkeit',
+      'Schwierigkeiten ein- oder durchzuschlafen oder vermehrter Schlaf',
+      'Müdigkeit oder Gefühl, keine Energie zu haben',
+      'Verminderter Appetit oder übermäßiges Bedürfnis zu essen',
+      'Schlechte Meinung von sich selbst; Gefühl, ein Versager zu sein oder die Familie enttäuscht zu haben',
+      'Schwierigkeiten, sich auf etwas zu konzentrieren, z. B. beim Lesen der Zeitung oder Fernsehen',
+      'Waren Ihre Bewegungen oder Ihre Sprache so verlangsamt, dass es auch anderen auffallen würde? Oder waren Sie im Gegenteil „zappelig“ oder ruhelos und hatten dadurch einen erhöhten Bewegungsdrang?',
+      'Gedanken, dass Sie lieber tot wären oder sich Leid zufügen möchten'
+    ],
+    bands: [[0, 'minimal'], [5, 'leicht'], [10, 'mittelschwer'], [15, 'ziemlich schwer'], [20, 'schwer']]
+  },
+  gad: {
+    key: 'gad', short: 'GAD-7', name: 'Ängstliche Beschwerden', max: 21,
+    intro: 'Wie oft fühlten Sie sich im Verlauf der letzten 2 Wochen durch die folgenden Beschwerden beeinträchtigt?',
+    options: FREQ,
+    items: [
+      'Nervosität, Ängstlichkeit oder Anspannung',
+      'Nicht in der Lage sein, Sorgen zu stoppen oder zu kontrollieren',
+      'Übermäßige Sorgen bezüglich verschiedener Angelegenheiten',
+      'Schwierigkeiten zu entspannen',
+      'Rastlosigkeit, so dass Stillsitzen schwer fällt',
+      'Schnelle Verärgerung oder Gereiztheit',
+      'Gefühl der Angst, so als würde etwas Schlimmes passieren'
+    ],
+    bands: [[0, 'minimal'], [5, 'leicht'], [10, 'mittelschwer'], [15, 'schwer']]
+  },
+  ses: {
+    key: 'ses', short: 'Sitzungsfragen', name: 'Sitzungsfragen (eigene Kurzfragen, nicht validiert)', max: 12,
+    intro: 'Bitte denken Sie an die heutige Sitzung. Wie sehr treffen die folgenden Aussagen zu?',
+    options: [
+      { v: 0, l: 'Gar nicht' }, { v: 1, l: 'Eher wenig' }, { v: 2, l: 'Teils, teils' },
+      { v: 3, l: 'Überwiegend' }, { v: 4, l: 'Völlig' }
+    ],
+    items: [
+      'Ich habe mich in der Sitzung verstanden und respektiert gefühlt.',
+      'Wir haben an dem gearbeitet, was mir wichtig ist.',
+      'Die Art, wie wir gearbeitet haben, passt zu mir.'
+    ],
+    bands: []
+  }
+};
+const KEYS = ['phq', 'gad', 'ses'];
+
+/* ===================== Hilfsfunktionen ===================== */
+const $ = (s, r = document) => r.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const te = new TextEncoder(), td = new TextDecoder();
+
+function h(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  if (props) for (const [k, v] of Object.entries(props)) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'style' && typeof v === 'object') Object.assign(e.style, v);
+    else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2).toLowerCase(), v);
+    else if (v === true) e.setAttribute(k, '');
+    else e.setAttribute(k, v);
+  }
+  for (const kid of kids.flat(Infinity)) {
+    if (kid === null || kid === undefined || kid === false) continue;
+    e.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  }
+  return e;
+}
+function s(tag, attrs, ...kids) {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (v === null || v === undefined) continue;
+    if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2).toLowerCase(), v);
+    else e.setAttribute(k, v);
+  }
+  for (const kid of kids.flat(Infinity)) if (kid !== null && kid !== undefined) e.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  return e;
+}
+function b64e(buf) {
+  const b = new Uint8Array(buf); let str = '';
+  for (let i = 0; i < b.length; i += 0x8000) str += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000));
+  return btoa(str);
+}
+function b64d(str) {
+  const bin = atob(str); const b = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i);
+  return b;
+}
+function uuid() {
+  if (crypto.randomUUID) return crypto.randomUUID();
+  const b = crypto.getRandomValues(new Uint8Array(16));
+  b[6] = (b[6] & 0x0f) | 0x40; b[8] = (b[8] & 0x3f) | 0x80;
+  const x = [...b].map(n => n.toString(16).padStart(2, '0')).join('');
+  return `${x.slice(0, 8)}-${x.slice(8, 12)}-${x.slice(12, 16)}-${x.slice(16, 20)}-${x.slice(20)}`;
+}
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+const fmtDate = ts => new Date(ts).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+const fmtShort = ts => new Date(ts).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+const signed = n => n > 0 ? '+' + n : n < 0 ? '−' + Math.abs(n) : '±0';
+function fmtWeeks(w) {
+  if (w < 1) return 'weniger als 1 Woche';
+  const n = Math.round(w);
+  return n === 1 ? '1 Woche' : n + ' Wochen';
+}
+const LS = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignorieren */ } },
+  del(k) { try { localStorage.removeItem(k); } catch (e) { /* ignorieren */ } }
+};
+
+/* ===================== Einstellungen & Backup-Info ===================== */
+const DEFAULTS = { idleMin: 5, phq: true, gad: true, ses: false, phqChange: 5, gadChange: 4, relevant: 10, minN: 5, weeks: 8 };
+const cfg = Object.assign({}, DEFAULTS);
+function loadCfg() {
+  try {
+    const o = JSON.parse(LS.get('verlauf.settings') || '{}');
+    for (const k of Object.keys(DEFAULTS)) if (typeof o[k] === typeof DEFAULTS[k]) cfg[k] = o[k];
+  } catch (e) { /* Standardwerte */ }
+}
+const saveCfg = () => LS.set('verlauf.settings', JSON.stringify(cfg));
+function getBk() {
+  try { const o = JSON.parse(LS.get('verlauf.backup') || '{}'); return { at: o.at || null, changes: Number(o.changes) || 0 }; }
+  catch (e) { return { at: null, changes: 0 }; }
+}
+const setBk = o => LS.set('verlauf.backup', JSON.stringify(o));
+function bumpChanges() { const b = getBk(); b.changes++; setBk(b); }
+
+/* ===================== Auswertung (rein, ohne Seiteneffekte) ===================== */
+function recScore(rec, k) {
+  const a = rec && rec[k];
+  if (!Array.isArray(a) || a.length !== Q[k].items.length) return null;
+  let sum = 0;
+  for (const v of a) { if (!Number.isInteger(v)) return null; sum += v; }
+  return sum;
+}
+function bandOf(k, score) {
+  let name = '';
+  for (const b of Q[k].bands) if (score >= b[0]) name = b[1];
+  return name;
+}
+function analyze(recs, c) {
+  const res = { n: recs.length, flags: [], series: { phq: [], gad: [] }, level: 'none', first: null, last: null, weeks: 0 };
+  if (!recs.length) return res;
+  res.first = recs[0]; res.last = recs[recs.length - 1];
+  res.weeks = (Date.parse(res.last.ts) - Date.parse(res.first.ts)) / (7 * 864e5);
+  for (const k of ['phq', 'gad']) for (const r of recs) {
+    const sc = recScore(r, k);
+    if (sc !== null) res.series[k].push({ rec: r, score: sc, ts: r.ts });
+  }
+  const add = (level, code, short, text) => res.flags.push({ level, code, short, text });
+
+  const lp = res.last.phq;
+  if (Array.isArray(lp) && lp.length === 9) {
+    const v = lp[8];
+    if (v === null || v === undefined) add('warn', 'item9_missing', 'Frage 9 offen', 'PHQ-9, Frage 9 (Gedanken an Tod oder Selbstverletzung) wurde nicht beantwortet.');
+    else if (v > 0) add('critical', 'item9', 'Frage 9 positiv', `PHQ-9, Frage 9 (Gedanken an Tod oder Selbstverletzung) ist positiv: „${FREQ[v].l}“. Bitte in dieser Sitzung abklären.`);
+  }
+  for (const k of ['phq', 'gad']) {
+    const ser = res.series[k]; if (!ser.length) continue;
+    const L = Q[k].short, thr = c[k + 'Change'];
+    const base = ser[0].score, last = ser[ser.length - 1].score;
+    const prev = ser.length > 1 ? ser[ser.length - 2].score : null;
+    let worse = false;
+    if (ser.length >= 2) {
+      if (last - prev >= thr) { worse = true; add('warn', k + '_worse_prev', 'Verlauf prüfen', `${L}: Anstieg um ${last - prev} Punkte seit der letzten Messung (${prev} → ${last}).`); }
+      else if (last - base >= thr) { worse = true; add('warn', k + '_worse_base', 'Verlauf prüfen', `${L}: ${last - base} Punkte höher als zu Beginn (${base} → ${last}).`); }
+    }
+    const weeks = (Date.parse(ser[ser.length - 1].ts) - Date.parse(ser[0].ts)) / (7 * 864e5);
+    if (!worse && ser.length >= 2 && base >= c.relevant && (base - last) < thr && (ser.length >= c.minN || weeks >= c.weeks)) {
+      add('warn', k + '_stagnation', 'Verlauf prüfen', `${L}: bisher keine deutliche Besserung (${base} → ${last}; ${ser.length} Messungen über ${fmtWeeks(weeks)}). Vorgehen gemeinsam prüfen.`);
+    }
+    if (ser.length >= 2) {
+      if (last < 5 && base >= 5) add('good', k + '_remission', 'Besserung', `${L}: unter 5 Punkten (zu Beginn ${base}, jetzt ${last}).`);
+      else if (base >= c.relevant && last <= base / 2) add('good', k + '_response', 'Besserung', `${L}: mindestens halbiert (zu Beginn ${base}, jetzt ${last}).`);
+    }
+  }
+  const ls = res.last.ses;
+  if (Array.isArray(ls) && ls.length === Q.ses.items.length && ls.some(v => Number.isInteger(v) && v <= 1)) {
+    add('info', 'ses_low', 'Sitzung ansprechen', 'Sitzungsfragen: mindestens eine Aussage wurde mit „gar nicht“ oder „eher wenig“ beantwortet. Beziehung oder Vorgehen ansprechen.');
+  }
+  const rank = { critical: 3, warn: 2, info: 1, good: 0 };
+  let top = -1;
+  for (const f of res.flags) if (rank[f.level] > top && f.level !== 'good') { top = rank[f.level]; res.level = f.level; }
+  return res;
+}
+
+/* ===================== Datenbank (IndexedDB) ===================== */
+let db = null;
+const reqP = r => new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+const txDone = tx => new Promise((res, rej) => { tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error || new Error('Abbruch')); });
+function openDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(DB_NAME, 1);
+    r.onupgradeneeded = () => {
+      const d = r.result;
+      if (!d.objectStoreNames.contains('meta')) d.createObjectStore('meta');
+      if (!d.objectStoreNames.contains('records')) d.createObjectStore('records', { keyPath: 'id' });
+    };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+const dbGetMeta = () => reqP(db.transaction('meta').objectStore('meta').get('crypto'));
+const dbAllRows = () => reqP(db.transaction('records').objectStore('records').getAll());
+function dbPutRows(rows) {
+  const tx = db.transaction('records', 'readwrite');
+  rows.forEach(r => tx.objectStore('records').put(r));
+  return txDone(tx);
+}
+function dbDeleteRows(ids) {
+  const tx = db.transaction('records', 'readwrite');
+  ids.forEach(id => tx.objectStore('records').delete(id));
+  return txDone(tx);
+}
+function dbReplaceAll(meta, rows) {
+  const tx = db.transaction(['meta', 'records'], 'readwrite');
+  tx.objectStore('meta').put(meta, 'crypto');
+  const rs = tx.objectStore('records'); rs.clear();
+  rows.forEach(r => rs.put(r));
+  return txDone(tx);
+}
+function dbWipe() {
+  const tx = db.transaction(['meta', 'records'], 'readwrite');
+  tx.objectStore('meta').clear(); tx.objectStore('records').clear();
+  return txDone(tx);
+}
+
+/* ===================== Verschlüsselung ===================== */
+async function deriveKey(pass, salt, iter) {
+  const base = await crypto.subtle.importKey('raw', te.encode(pass.normalize('NFKC')), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: iter }, base,
+    { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function seal(key, obj, aad) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: te.encode(aad) }, key, te.encode(JSON.stringify(obj)));
+  return { iv: b64e(iv), ct: b64e(ct) };
+}
+async function unseal(key, sealed, aad) {
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64d(sealed.iv), additionalData: te.encode(aad) }, key, b64d(sealed.ct));
+  return JSON.parse(td.decode(pt));
+}
+const CHECK_TEXT = 'verlauf-ok';
+function recPayload(r) { return { pid: r.pid, ts: r.ts, phq: r.phq, gad: r.gad, ses: r.ses, src: r.src }; }
+function normArr(a, k) {
+  const q = Q[k];
+  if (!Array.isArray(a) || a.length !== q.items.length) return null;
+  const mx = q.options[q.options.length - 1].v;
+  return a.map(v => (Number.isInteger(v) && v >= 0 && v <= mx) ? v : null);
+}
+function normalizeRecord(o, id) {
+  if (!o || typeof o.pid !== 'string' || !o.pid || isNaN(Date.parse(o.ts))) return null;
+  return { id, pid: o.pid, ts: new Date(o.ts).toISOString(), phq: normArr(o.phq, 'phq'), gad: normArr(o.gad, 'gad'), ses: normArr(o.ses, 'ses'), src: o.src === 'patient' ? 'patient' : 'therapist' };
+}
+const sortRecs = a => a.sort((x, y) => (Date.parse(x.ts) - Date.parse(y.ts)) || (x.id < y.id ? -1 : 1));
+
+/* ===================== Zustand ===================== */
+const state = {
+  view: 'boot', key: null, meta: null, rows: new Map(), records: [], corrupt: 0,
+  pid: null, flow: null, lockNote: null, pendingPid: null,
+  filter: '', sort: 'attention', fatal: ''
+};
+let lastAct = Date.now(), hiddenAt = null, failCount = 0;
+
+async function loadRows(key) {
+  const rows = await dbAllRows();
+  const recs = []; let bad = 0; const map = new Map();
+  for (const row of rows) {
+    map.set(row.id, row);
+    try { const r = normalizeRecord(await unseal(key, row, row.id), row.id); if (r) recs.push(r); else bad++; }
+    catch (e) { bad++; }
+  }
+  return { recs: sortRecs(recs), bad, map };
+}
+async function tryUnlock(pass) {
+  const meta = await dbGetMeta();
+  const key = await deriveKey(pass, b64d(meta.salt), meta.iter);
+  try { if (await unseal(key, meta.check, 'check') !== CHECK_TEXT) return false; } catch (e) { return false; }
+  const { recs, bad, map } = await loadRows(key);
+  state.key = key; state.meta = meta; state.records = recs; state.corrupt = bad; state.rows = map;
+  return true;
+}
+async function doSetup(pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const key = await deriveKey(pass, salt, KDF_ITER);
+  const meta = { v: 1, kdf: 'PBKDF2-SHA256', iter: KDF_ITER, salt: b64e(salt), check: await seal(key, CHECK_TEXT, 'check') };
+  await dbReplaceAll(meta, []);
+  state.key = key; state.meta = meta; state.records = []; state.rows = new Map(); state.corrupt = 0;
+  setBk({ at: null, changes: 0 });
+  try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch (e) { /* optional */ }
+}
+async function saveRecord(rec) {
+  const row = Object.assign({ id: rec.id }, await seal(state.key, recPayload(rec), rec.id));
+  await dbPutRows([row]);
+  state.rows.set(row.id, row);
+  state.records = sortRecs(state.records.concat([rec]));
+  bumpChanges();
+}
+async function deleteRecords(ids) {
+  await dbDeleteRows(ids);
+  ids.forEach(id => state.rows.delete(id));
+  state.records = state.records.filter(r => !ids.includes(r.id));
+  bumpChanges();
+}
+async function renamePid(oldPid, newPid) {
+  const hits = state.records.filter(r => r.pid === oldPid);
+  const rows = [];
+  for (const r of hits) {
+    const nr = Object.assign({}, r, { pid: newPid });
+    rows.push(Object.assign({ id: r.id }, await seal(state.key, recPayload(nr), r.id)));
+  }
+  await dbPutRows(rows);
+  rows.forEach(r => state.rows.set(r.id, r));
+  state.records = sortRecs(state.records.map(r => r.pid === oldPid ? Object.assign({}, r, { pid: newPid }) : r));
+  bumpChanges();
+}
+async function changePass(oldPass, newPass) {
+  const meta = await dbGetMeta();
+  const k = await deriveKey(oldPass, b64d(meta.salt), meta.iter);
+  try { await unseal(k, meta.check, 'check'); } catch (e) { return 'old'; }
+  if (state.corrupt > 0) return 'corrupt';
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const key = await deriveKey(newPass, salt, KDF_ITER);
+  const nm = { v: 1, kdf: 'PBKDF2-SHA256', iter: KDF_ITER, salt: b64e(salt), check: await seal(key, CHECK_TEXT, 'check') };
+  const rows = [];
+  for (const r of state.records) rows.push(Object.assign({ id: r.id }, await seal(key, recPayload(r), r.id)));
+  await dbReplaceAll(nm, rows);
+  state.key = key; state.meta = nm; state.rows = new Map(rows.map(r => [r.id, r]));
+  bumpChanges();
+  return 'ok';
+}
+function buildBackup() {
+  return JSON.stringify({ app: 'verlauf-fragebogen', v: 1, exportedAt: new Date().toISOString(), meta: state.meta, records: [...state.rows.values()] });
+}
+async function importBackup(text, pass) {
+  let data;
+  try { data = JSON.parse(text); } catch (e) { return { ok: false, err: 'Die Datei ist kein gültiges Backup.' }; }
+  const m = data && data.meta;
+  const okMeta = m && typeof m.salt === 'string' && Number.isInteger(m.iter) && m.iter >= 100000 && m.iter <= 5000000 &&
+    m.check && typeof m.check.iv === 'string' && typeof m.check.ct === 'string';
+  const okRows = data && Array.isArray(data.records) && data.records.every(r => r && typeof r.id === 'string' && typeof r.iv === 'string' && typeof r.ct === 'string');
+  if (!data || data.app !== 'verlauf-fragebogen' || data.v !== 1 || !okMeta || !okRows) return { ok: false, err: 'Die Datei ist kein gültiges Backup dieser App.' };
+  let key;
+  try {
+    key = await deriveKey(pass, b64d(m.salt), m.iter);
+    if (await unseal(key, m.check, 'check') !== CHECK_TEXT) throw new Error('x');
+  } catch (e) { return { ok: false, err: 'Die Passphrase passt nicht zu diesem Backup.' }; }
+  const rows = data.records.map(r => ({ id: r.id, iv: r.iv, ct: r.ct }));
+  await dbReplaceAll(m, rows);
+  const { recs, bad, map } = await loadRows(key);
+  state.key = key; state.meta = m; state.records = recs; state.corrupt = bad; state.rows = map;
+  setBk({ at: new Date().toISOString(), changes: 0 });
+  return { ok: true, count: recs.length, bad };
+}
+async function shareOrDownload(filename, text) {
+  for (const type of ['application/json', 'text/plain']) {
+    try {
+      const f = new File([text], filename, { type });
+      if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], title: filename }); return 'shared'; }
+    } catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; }
+  }
+  const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  const a = h('a', { href: url, download: filename }); document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+  return 'downloaded';
+}
+async function exportBackup() {
+  const text = buildBackup();
+  const name = `verlauf-backup-${todayStr()}.json`;
+  try {
+    const r = await shareOrDownload(name, text);
+    if (r === 'cancelled') return;
+    setBk({ at: new Date().toISOString(), changes: 0 });
+    toast(r === 'shared' ? 'Backup geteilt.' : 'Backup heruntergeladen.');
+    render({ keep: true });
+  } catch (e) { toast('Backup fehlgeschlagen: ' + (e && e.message ? e.message : e)); }
+}
+
+/* ===================== Sperren ===================== */
+function lock(note, pendingPid) {
+  state.key = null; state.records = []; state.flow = null; state.pid = null; state.corrupt = 0;
+  state.pendingPid = pendingPid || null;
+  state.lockNote = note || null;
+  state.view = 'lock';
+  closeModal();
+  render();
+}
+
+/* ===================== Dialoge ===================== */
+let toastTimer = null;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3400);
+}
+let modalCancel = null;
+function closeModal() { modalCancel = null; $('#modal-root').replaceChildren(); }
+function cancelModal() { const f = modalCancel; closeModal(); if (f) f(); }
+function modal({ title, content, actions, dismiss = true, onCancel }) {
+  closeModal();
+  modalCancel = onCancel || null;
+  const back = h('div', { class: 'modal-back', onclick: e => { if (e.target === back && dismiss) cancelModal(); } });
+  const box = h('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-label': title },
+    h('h2', null, title), content,
+    h('div', { class: 'modal-actions' }, actions.map(a => h('button', {
+      class: 'btn ' + (a.kind || ''), type: 'button', id: a.id || null,
+      onclick: async ev => {
+        const btn = ev.currentTarget; btn.disabled = true;
+        try { if ((await (a.run ? a.run() : true)) !== false) closeModal(); } finally { btn.disabled = false; }
+      }
+    }, a.label))));
+  back.append(box); $('#modal-root').append(back);
+  const first = box.querySelector('input,select'); if (first) setTimeout(() => { if (!box.contains(document.activeElement)) first.focus(); }, 30);
+  return box;
+}
+function confirmModal(title, text, okLabel, kind) {
+  return new Promise(resolve => {
+    let done = false; const fin = v => { if (!done) { done = true; resolve(v); } };
+    modal({ title, content: h('p', null, text), onCancel: () => fin(false), actions: [
+      { label: 'Abbrechen', run: () => { fin(false); } },
+      { label: okLabel, kind: kind || 'primary', run: () => { fin(true); } }
+    ] });
+  });
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#modal-root').firstChild) cancelModal(); });
+
+/* ===================== Diagramm ===================== */
+function chartEl(k, pts) {
+  const q = Q[k], W = 760, H = 250, L = 38, R = 96, T = 18, B = 34;
+  const pw = W - L - R, ph = H - T - B, max = q.max, n = pts.length;
+  const Y = v => T + ph - (v / max) * ph;
+  const X = i => n === 1 ? L + pw / 2 : L + 24 + (pw - 48) * i / (n - 1);
+  const first = pts[0].score, last = pts[n - 1].score;
+  const wrap = h('div', { class: 'chart' });
+  const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, class: 'chart-svg', role: 'group',
+    'aria-label': `${q.short}-Verlauf: ${n} Messung${n === 1 ? '' : 'en'}, zuletzt ${last} Punkte (${bandOf(k, last)}). Die Werte stehen auch in der Tabelle darunter.` });
+  q.bands.forEach((b, i) => {
+    const lo = b[0], hi = i + 1 < q.bands.length ? q.bands[i + 1][0] : max;
+    svg.append(s('rect', { x: L, y: Y(hi), width: pw, height: Y(lo) - Y(hi), class: i % 2 ? 'band-b' : 'band-a' }));
+    svg.append(s('text', { x: L + pw + 10, y: (Y(lo) + Y(hi)) / 2 + 4, class: 'ax-band' }, b[1]));
+  });
+  q.bands.map(b => b[0]).concat([max]).forEach(t => {
+    svg.append(s('line', { x1: L, x2: L + pw, y1: Y(t), y2: Y(t), class: t === 0 ? 'axis' : 'grid' }));
+    svg.append(s('text', { x: L - 8, y: Y(t) + 4, class: 'ax-y', 'text-anchor': 'end' }, String(t)));
+  });
+  const step = Math.max(1, Math.ceil(n / Math.max(1, Math.floor(pw / 62))));
+  pts.forEach((p, i) => { if (i % step === 0 || i === n - 1) svg.append(s('text', { x: X(i), y: H - B + 20, class: 'ax-x', 'text-anchor': 'middle' }, fmtShort(p.ts))); });
+  const guide = s('line', { x1: 0, x2: 0, y1: T, y2: T + ph, class: 'guide', visibility: 'hidden' });
+  svg.append(guide);
+  if (n > 1) svg.append(s('path', { d: pts.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p.score).toFixed(1)}`).join(' '), fill: 'none', 'stroke-width': 2, 'stroke-linejoin': 'round', class: 'line-' + k }));
+  const flagged = pts.map(p => k === 'phq' && p.rec.phq && Number.isInteger(p.rec.phq[8]) && p.rec.phq[8] > 0);
+  pts.forEach((p, i) => {
+    if (flagged[i]) svg.append(s('circle', { cx: X(i), cy: Y(p.score), r: 9.5, class: 'ring' }));
+    svg.append(s('circle', { cx: X(i), cy: Y(p.score), r: 4.75, class: 'pt pt-' + k }));
+  });
+  [0, n - 1].filter((v, i, a) => a.indexOf(v) === i).forEach(i => {
+    svg.append(s('text', { x: X(i), y: Y(pts[i].score) - (flagged[i] ? 16 : 11), class: 'val', 'text-anchor': 'middle' }, String(pts[i].score)));
+  });
+  const tip = h('div', { class: 'tip', hidden: true });
+  const showTip = i => {
+    const p = pts[i];
+    guide.setAttribute('x1', X(i)); guide.setAttribute('x2', X(i)); guide.setAttribute('visibility', 'visible');
+    tip.textContent = `${fmtDate(p.ts)} · ${q.short} ${p.score} (${bandOf(k, p.score)})${flagged[i] ? ' · Frage 9 positiv' : ''}`;
+    tip.hidden = false;
+    const r = svg.getBoundingClientRect(), sc = r.width / W;
+    const w = tip.offsetWidth || 160;
+    tip.style.left = Math.min(Math.max(X(i) * sc, w / 2), r.width - w / 2) + 'px';
+    tip.style.top = (Y(p.score) * sc - 14) + 'px';
+  };
+  const hideTip = () => { tip.hidden = true; guide.setAttribute('visibility', 'hidden'); };
+  pts.forEach((p, i) => {
+    svg.append(s('circle', { cx: X(i), cy: Y(p.score), r: 22, class: 'hit', tabindex: '0', role: 'img',
+      'aria-label': `${fmtDate(p.ts)}: ${q.short} ${p.score}, ${bandOf(k, p.score)}${flagged[i] ? ', Frage 9 positiv' : ''}`,
+      onpointerenter: () => showTip(i), onclick: () => showTip(i), onfocus: () => showTip(i),
+      onpointerleave: ev => { if (ev.pointerType === 'mouse') hideTip(); }, onblur: hideTip }));
+  });
+  wrap.append(svg, tip);
+  if (flagged.some(Boolean)) wrap.append(h('div', { class: 'legend' },
+    (() => { const m = s('svg', { width: 22, height: 22, viewBox: '0 0 22 22', 'aria-hidden': 'true' }, s('circle', { cx: 11, cy: 11, r: 9.5, class: 'ring' }), s('circle', { cx: 11, cy: 11, r: 4.75, class: 'pt pt-' + k })); return m; })(),
+    'Roter Ring: Frage 9 (Gedanken an Tod oder Selbstverletzung) war positiv'));
+  return wrap;
+}
+document.addEventListener('pointerdown', e => { if (!e.target.closest || !e.target.closest('.chart')) document.querySelectorAll('.chart .tip').forEach(t => { t.hidden = true; }); }, true);
+
+/* ===================== Ansichten ===================== */
+const app = $('#app');
+function render(opts) {
+  const y = window.scrollY;
+  app.replaceChildren();
+  let node;
+  switch (state.view) {
+    case 'fatal': node = viewFatal(); break;
+    case 'setup': node = viewSetup(); break;
+    case 'lock': node = viewLock(); break;
+    case 'home': node = viewHome(); break;
+    case 'patient': node = viewPatient(); break;
+    case 'flow': node = viewFlow(); break;
+    case 'settings': node = viewSettings(); break;
+    default: node = h('div', { class: 'wrap' }, 'Wird geladen …');
+  }
+  app.append(node);
+  if (opts && opts.keep) window.scrollTo(0, y); else window.scrollTo(0, 0);
+  const af = node.querySelector('[data-autofocus]'); if (af) setTimeout(() => { if (!node.contains(document.activeElement)) af.focus(); }, 50);
+}
+const go = (view, extra) => { Object.assign(state, extra || {}, { view }); render(); };
+
+function viewFatal() {
+  return h('div', { class: 'wrap center' }, h('h1', null, 'Nicht verfügbar'), h('p', null, state.fatal));
+}
+function passField(id, label, autocomplete, extra) {
+  return h('label', { class: 'field' }, h('span', null, label),
+    h('input', Object.assign({ type: 'password', id, autocomplete, autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' }, extra || {})));
+}
+function showToggle(inputs) {
+  return h('label', { class: 'check' }, h('input', { type: 'checkbox', onchange: e => inputs.forEach(i => { i.type = e.target.checked ? 'text' : 'password'; }) }), h('span', null, 'Passphrase anzeigen'));
+}
+function validatePass(a, b) {
+  if (a.length < MIN_PASS) return `Die Passphrase braucht mindestens ${MIN_PASS} Zeichen.`;
+  if (/^(.)\1+$/.test(a) || /^\d+$/.test(a)) return 'Bitte keine reine Zahlen- oder Wiederholungsfolge wählen.';
+  if (a !== b) return 'Die beiden Eingaben stimmen nicht überein.';
+  return '';
+}
+
+function viewSetup() {
+  const err = h('div', { class: 'err', hidden: true, role: 'alert' });
+  const p1 = passField('p1', 'Passphrase', 'new-password', { 'data-autofocus': '1' });
+  const p2 = passField('p2', 'Passphrase wiederholen', 'new-password');
+  const ack = h('input', { type: 'checkbox', id: 'ack' });
+  const btn = h('button', { class: 'btn primary', type: 'submit' }, 'Einrichten');
+  const form = h('form', { onsubmit: async e => {
+    e.preventDefault(); err.hidden = true;
+    const a = $('input', p1).value, b = $('input', p2).value;
+    const msg = validatePass(a, b) || (!ack.checked ? 'Bitte bestätigen Sie, dass Sie die Passphrase sicher notiert haben.' : '');
+    if (msg) { err.textContent = msg; err.hidden = false; return; }
+    btn.disabled = true; btn.textContent = 'Wird eingerichtet …'; await sleep(40);
+    try { await doSetup(a); go('home'); toast('Eingerichtet.'); }
+    catch (ex) { err.textContent = 'Einrichtung fehlgeschlagen: ' + (ex && ex.message || ex); err.hidden = false; btn.disabled = false; btn.textContent = 'Einrichten'; }
+  } },
+  err, p1, p2, showToggle([$('input', p1), $('input', p2)]),
+  h('label', { class: 'check' }, ack, h('span', null, 'Ich habe die Passphrase sicher notiert.')),
+  h('div', { style: { display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' } }, btn,
+    h('button', { class: 'btn quiet', type: 'button', onclick: () => openRestore(false) }, 'Backup wiederherstellen')));
+  return h('div', { class: 'wrap center' },
+    h('div', { class: 'top' }, h('div', { class: 'grow' }, h('h1', null, 'Verlauf einrichten'))),
+    h('p', { class: 'sub' }, 'Alle Messungen werden verschlüsselt auf diesem iPad gespeichert. Der Schlüssel entsteht aus Ihrer Passphrase und wird nirgends abgelegt.'),
+    h('div', { class: 'note' }, 'Ohne die Passphrase sind die Daten unwiederbringlich verloren, auch Backups lassen sich dann nicht öffnen. Ein Satz aus mehreren Wörtern ist sicherer und leichter zu merken als ein kurzes Passwort.'),
+    h('div', { class: 'card' }, form));
+}
+
+function viewLock() {
+  const thanks = state.lockNote === 'thanks';
+  const err = h('div', { class: 'err', hidden: true, role: 'alert' });
+  const pass = h('input', { type: 'password', id: 'unlock-pass', autocomplete: 'current-password', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false', placeholder: 'Passphrase', 'data-autofocus': thanks ? null : '1' });
+  const btn = h('button', { class: 'btn primary', type: 'submit', style: { width: '100%', marginTop: '4px' } }, 'Entsperren');
+  const form = h('form', { onsubmit: async e => {
+    e.preventDefault(); err.hidden = true;
+    if (!pass.value) return;
+    btn.disabled = true; btn.textContent = 'Wird entsperrt …'; await sleep(40);
+    let ok = false;
+    try { ok = await tryUnlock(pass.value); } catch (ex) { err.textContent = 'Fehler beim Entsperren: ' + (ex && ex.message || ex); err.hidden = false; btn.disabled = false; btn.textContent = 'Entsperren'; return; }
+    if (ok) {
+      failCount = 0; lastAct = Date.now();
+      const pp = state.pendingPid; state.pendingPid = null; state.lockNote = null;
+      if (pp && state.records.some(r => r.pid === pp)) go('patient', { pid: pp }); else go('home');
+      if (state.corrupt) toast(`${state.corrupt} Eintrag/Einträge konnten nicht gelesen werden.`);
+    } else {
+      failCount++; await sleep(Math.min(failCount, 6) * 600);
+      pass.value = ''; err.textContent = 'Die Passphrase stimmt nicht.'; err.hidden = false;
+      btn.disabled = false; btn.textContent = 'Entsperren'; pass.focus();
+    }
+  } },
+  h('input', { type: 'text', name: 'username', autocomplete: 'username', value: 'Verlauf', tabindex: '-1', 'aria-hidden': 'true', style: { position: 'absolute', opacity: '0', height: '0', width: '0', pointerEvents: 'none' } }),
+  err, pass, h('label', { class: 'check', style: { marginTop: '12px' } }, h('input', { type: 'checkbox', onchange: e => { pass.type = e.target.checked ? 'text' : 'password'; } }), h('span', null, 'Passphrase anzeigen')), btn);
+  const head = thanks
+    ? h('div', { class: 'thanks' }, h('h1', null, 'Vielen Dank.'), h('p', { class: 'sub' }, 'Ihre Antworten sind gespeichert. Bitte geben Sie das Tablet zurück.'), h('div', { class: 'crisis' }, CRISIS_TEXT), h('hr', { class: 'sep' }), h('p', { class: 'muted small' }, 'Nur für die Praxis:'))
+    : h('div', null, h('h1', null, 'Gesperrt'), h('p', { class: 'sub' }, state.lockNote === 'timeout' ? 'Aus Sicherheitsgründen automatisch gesperrt.' : 'Passphrase eingeben, um die Verläufe zu öffnen.'));
+  return h('div', { class: 'lockbox' }, h('div', { class: 'center', style: { width: '100%' } }, head, h('div', { class: 'card', style: { marginTop: '16px' } }, form)));
+}
+
+function groupRecords() {
+  const m = new Map();
+  for (const r of state.records) { if (!m.has(r.pid)) m.set(r.pid, []); m.get(r.pid).push(r); }
+  return [...m.entries()].map(([pid, recs]) => ({ pid, recs: sortRecs(recs), a: analyze(sortRecs(recs), cfg) }));
+}
+function suggestPid() {
+  let mx = 0;
+  for (const r of state.records) { const m = /^P-(\d+)$/.exec(r.pid); if (m) mx = Math.max(mx, parseInt(m[1], 10)); }
+  return 'P-' + String(mx + 1).padStart(3, '0');
+}
+function normPid(v) {
+  const p = v.trim().toUpperCase();
+  return /^[A-Z0-9][A-Z0-9_-]{0,23}$/.test(p) ? p : null;
+}
+function levelBadge(a) {
+  if (a.level === 'critical') return h('span', { class: 'badge crit' }, h('b', { 'aria-hidden': 'true' }, '!'), a.flags.find(f => f.level === 'critical').short);
+  if (a.level === 'warn') return h('span', { class: 'badge warn' }, h('b', { 'aria-hidden': 'true' }, '▲'), a.flags.find(f => f.level === 'warn').short);
+  if (a.level === 'info') return h('span', { class: 'badge info' }, h('b', { 'aria-hidden': 'true' }, 'i'), a.flags.find(f => f.level === 'info').short);
+  return null;
+}
+function arrow(d) { return d < 0 ? '↓' + (-d) : d > 0 ? '↑' + d : '→'; }
+
+function backupBanner() {
+  if (!state.records.length) return null;
+  const b = getBk();
+  const age = b.at ? (Date.now() - Date.parse(b.at)) / 864e5 : Infinity;
+  if (b.at && !(b.changes > 0 && age >= 7)) return null;
+  const txt = b.at ? `Letztes Backup vor ${Math.floor(age)} Tagen, seitdem ${b.changes} Änderung${b.changes === 1 ? '' : 'en'}.` : 'Es gibt noch kein Backup. Wird die App vom Home-Bildschirm gelöscht oder das iPad zurückgesetzt, sind die Daten weg.';
+  return h('div', { class: 'note' }, txt, h('div', null, h('button', { class: 'btn sm', onclick: exportBackup }, 'Backup jetzt sichern')));
+}
+
+function viewHome() {
+  const groups = groupRecords();
+  const listBox = h('div', { class: 'list' });
+  const sum = h('p', { class: 'sub' });
+  const fill = () => {
+    let g = groups.filter(x => x.pid.includes(state.filter.trim().toUpperCase()));
+    const rank = { critical: 0, warn: 1, info: 2, none: 3 };
+    const lastTs = x => Date.parse(x.a.last.ts);
+    if (state.sort === 'name') g.sort((x, y) => x.pid.localeCompare(y.pid, 'de', { numeric: true }));
+    else if (state.sort === 'recent') g.sort((x, y) => lastTs(y) - lastTs(x));
+    else g.sort((x, y) => (rank[x.a.level] - rank[y.a.level]) || (lastTs(y) - lastTs(x)));
+    listBox.replaceChildren();
+    const flagged = groups.filter(x => x.a.level === 'critical' || x.a.level === 'warn').length;
+    sum.textContent = groups.length ? `${groups.length} Patient:innen, ${flagged} mit Hinweisen` : '';
+    if (!groups.length) listBox.append(h('div', { class: 'card empty' }, h('h2', null, 'Noch keine Messungen'), h('p', null, 'Mit „Neue Messung“ legen Sie die erste Kennung an. Bitte nur Kennungen verwenden, keine Namen.')));
+    else if (!g.length) listBox.append(h('div', { class: 'empty' }, 'Keine Kennung gefunden.'));
+    g.forEach(x => {
+      const chips = ['phq', 'gad'].filter(k => x.a.series[k].length).map(k => {
+        const ser = x.a.series[k], last = ser[ser.length - 1].score, prev = ser.length > 1 ? ser[ser.length - 2].score : null;
+        return h('span', { class: 'chip c-' + k, title: prev === null ? '' : `${signed(last - prev)} Punkte zur letzten Messung` }, h('i'), `${Q[k].short} ${last}`, prev === null ? '' : ' ' + arrow(last - prev));
+      });
+      listBox.append(h('button', { class: 'prow', onclick: () => go('patient', { pid: x.pid }) },
+        h('div', { class: 'meta' }, h('div', { class: 'id' }, x.pid), h('div', { class: 'sub' }, `zuletzt ${fmtDate(x.a.last.ts)} · ${x.a.n} Messung${x.a.n === 1 ? '' : 'en'}`)),
+        h('div', { class: 'chips' }, chips), levelBadge(x.a)));
+    });
+  };
+  const search = h('input', { type: 'search', placeholder: 'Kennung suchen', value: state.filter, 'aria-label': 'Kennung suchen', oninput: e => { state.filter = e.target.value; fill(); } });
+  const sort = h('select', { 'aria-label': 'Sortierung', onchange: e => { state.sort = e.target.value; fill(); } },
+    [['attention', 'Auffälligkeiten zuerst'], ['recent', 'Zuletzt gemessen'], ['name', 'Kennung']].map(([v, l]) => h('option', { value: v, selected: state.sort === v }, l)));
+  fill();
+  return h('div', { class: 'wrap' },
+    h('div', { class: 'top' }, h('div', { class: 'grow' }, h('h1', null, 'Verlauf'), sum),
+      h('button', { class: 'btn primary', id: 'btn-new', onclick: openNewPatient }, 'Neue Messung'),
+      h('button', { class: 'btn', id: 'btn-settings', onclick: () => go('settings') }, 'Einstellungen'),
+      h('button', { class: 'btn', id: 'btn-lock', onclick: () => lock() }, 'Sperren')),
+    backupBanner(),
+    h('div', { class: 'controls' }, h('div', { class: 'grow' }, search), sort),
+    listBox);
+}
+
+function openNewPatient() {
+  const input = h('input', { type: 'text', id: 'new-pid', value: suggestPid(), autocomplete: 'off', autocapitalize: 'characters', autocorrect: 'off', spellcheck: 'false', maxlength: '24' });
+  const err = h('div', { class: 'err', hidden: true, role: 'alert' });
+  const content = h('div', null, err, h('label', { class: 'field' }, h('span', null, 'Kennung'), input,
+    h('small', null, 'Keine Namen, Initialen oder Geburtsdaten. Nur eine Kennung, die ausschließlich in Ihrer Patientenakte zugeordnet ist. Erlaubt: Buchstaben, Ziffern, - und _.')));
+  const begin = mode => () => {
+    const p = normPid(input.value);
+    if (!p) { err.textContent = 'Bitte eine gültige Kennung eingeben (max. 24 Zeichen).'; err.hidden = false; return false; }
+    startFlow(p, mode);
+  };
+  modal({ title: 'Neue Messung', content, actions: [
+    { label: 'Abbrechen' },
+    { label: 'Papierbogen eintragen', id: 'new-self', run: begin('therapist') },
+    { label: 'Tablet übergeben', kind: 'primary', id: 'new-patient', run: begin('patient') }
+  ] });
+}
+
+function viewPatient() {
+  const recs = state.records.filter(r => r.pid === state.pid);
+  if (!recs.length) { state.view = 'home'; return viewHome(); }
+  const a = analyze(recs, cfg);
+  const flagsCard = a.flags.length ? h('div', { class: 'card' }, h('h2', null, 'Hinweise'),
+    h('p', { class: 'sub small' }, 'Automatische Orientierungshilfen auf Basis Ihrer Schwellenwerte, kein Befund.'),
+    h('div', { class: 'flags' }, a.flags.map(f => h('div', { class: 'flag' },
+      h('span', { class: 'badge ' + (f.level === 'critical' ? 'crit' : f.level) }, h('b', { 'aria-hidden': 'true' }, { critical: '!', warn: '▲', info: 'i', good: '✓' }[f.level]), { critical: 'Wichtig', warn: 'Hinweis', info: 'Info', good: 'Positiv' }[f.level]),
+      h('p', null, f.text))))) : null;
+  const cards = ['phq', 'gad'].filter(k => a.series[k].length).map(k => {
+    const ser = a.series[k], last = ser[ser.length - 1].score, base = ser[0].score, prev = ser.length > 1 ? ser[ser.length - 2].score : null;
+    return h('div', { class: 'card' }, h('h2', null, `${Q[k].short} · ${Q[k].name}`),
+      h('div', { class: 'stat' }, h('span', { class: 'big' }, String(last)), h('span', null, bandOf(k, last)),
+        ser.length > 1 ? h('span', null, `${signed(last - base)} seit Beginn`) : null,
+        prev !== null ? h('span', null, `${signed(last - prev)} zur letzten Messung`) : null),
+      chartEl(k, ser));
+  });
+  const scoreCell = (r, k) => {
+    const sc = recScore(r, k);
+    return h('td', { class: 'num' }, r[k] === null ? '–' : sc === null ? 'unvollständig' : `${sc} (${bandOf(k, sc)})`);
+  };
+  const useSes = recs.some(r => r.ses);
+  const table = h('table', { class: 'tbl' },
+    h('thead', null, h('tr', null, h('th', null, 'Datum'), h('th', null, 'PHQ-9'), h('th', null, 'GAD-7'), h('th', null, 'Frage 9'), useSes ? h('th', null, 'Sitzungsfragen') : null, h('th', null, h('span', { class: 'sr', style: { position: 'absolute', left: '-9999px' } }, 'Aktionen')))),
+    h('tbody', null, recs.slice().reverse().map(r => {
+      const v9 = r.phq ? r.phq[8] : null;
+      const ses = recScore(r, 'ses');
+      return h('tr', null, h('td', null, fmtDate(r.ts), r.src === 'therapist' ? h('span', { class: 'muted small' }, ' (Papier)') : null),
+        scoreCell(r, 'phq'), scoreCell(r, 'gad'),
+        h('td', { class: v9 > 0 ? 'q9' : '' }, !r.phq ? '–' : v9 === null ? 'offen' : v9 > 0 ? `! ${FREQ[v9].l}` : 'nein'),
+        useSes ? h('td', { class: 'num' }, !r.ses ? '–' : ses === null ? 'unvollständig' : `${ses} von ${Q.ses.max}`) : null,
+        h('td', null, h('button', { class: 'btn quiet sm', 'aria-label': `Messung vom ${fmtDate(r.ts)} löschen`, onclick: async () => {
+          if (await confirmModal('Messung löschen?', `Die Messung vom ${fmtDate(r.ts)} wird dauerhaft gelöscht.`, 'Löschen', 'danger')) { await deleteRecords([r.id]); render({ keep: true }); toast('Messung gelöscht.'); }
+        } }, 'Löschen')));
+    })));
+  return h('div', { class: 'wrap' },
+    h('div', { class: 'top' },
+      h('button', { class: 'btn', id: 'btn-back', onclick: () => go('home') }, '‹ Übersicht'),
+      h('div', { class: 'grow' }, h('h1', null, state.pid), h('div', { class: 'sub' }, `erste Messung ${fmtDate(a.first.ts)} · ${a.n} Messung${a.n === 1 ? '' : 'en'}${a.weeks >= 1 ? ' · ' + fmtWeeks(a.weeks) : ''}`)),
+      h('button', { class: 'btn primary', id: 'btn-hand', onclick: () => startFlow(state.pid, 'patient') }, 'Tablet übergeben'),
+      h('button', { class: 'btn', id: 'btn-self', onclick: () => startFlow(state.pid, 'therapist') }, 'Papierbogen eintragen')),
+    flagsCard, cards,
+    h('div', { class: 'card' }, h('h2', null, 'Messungen'), h('div', { class: 'scroll-x' }, table)),
+    h('div', { class: 'card' }, h('h2', null, 'Verwalten'), h('div', { style: { display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' } },
+      h('button', { class: 'btn', onclick: () => openRename(state.pid) }, 'Kennung ändern'),
+      h('button', { class: 'btn danger', onclick: async () => {
+        if (await confirmModal('Alle Messungen löschen?', `Alle ${a.n} Messungen von ${state.pid} werden dauerhaft gelöscht.`, 'Alles löschen', 'danger')) {
+          await deleteRecords(recs.map(r => r.id)); go('home'); toast('Gelöscht.');
+        }
+      } }, 'Alle Messungen dieser Kennung löschen'))));
+}
+function openRename(oldPid) {
+  const input = h('input', { type: 'text', id: 'rename-pid', value: oldPid, autocomplete: 'off', autocapitalize: 'characters', autocorrect: 'off', spellcheck: 'false', maxlength: '24' });
+  const err = h('div', { class: 'err', hidden: true, role: 'alert' });
+  modal({ title: 'Kennung ändern', content: h('div', null, err, h('label', { class: 'field' }, h('span', null, 'Neue Kennung'), input)), actions: [
+    { label: 'Abbrechen' },
+    { label: 'Ändern', kind: 'primary', id: 'rename-ok', run: async () => {
+      const p = normPid(input.value);
+      if (!p) { err.textContent = 'Bitte eine gültige Kennung eingeben.'; err.hidden = false; return false; }
+      if (p === oldPid) return true;
+      if (state.records.some(r => r.pid === p)) { err.textContent = 'Diese Kennung gibt es schon.'; err.hidden = false; return false; }
+      await renamePid(oldPid, p); state.pid = p; render({ keep: true }); toast('Kennung geändert.');
+    } }
+  ] });
+}
+
+/* ---- Fragebogen-Ablauf ---- */
+function startFlow(pid, mode) {
+  const inst = KEYS.filter(k => cfg[k]);
+  if (!inst.length) { toast('Es ist kein Fragebogen aktiviert (Einstellungen).'); return; }
+  const steps = [{ t: 'intro' }];
+  inst.forEach(k => Q[k].items.forEach((_, idx) => steps.push({ t: 'q', k, idx })));
+  steps.push({ t: 'review' });
+  const ans = {}; inst.forEach(k => { ans[k] = new Array(Q[k].items.length).fill(undefined); });
+  closeModal();
+  go('flow', { pid, flow: { pid, mode, inst, ans, steps, i: 0, date: todayStr(), busy: false } });
+}
+function abortFlow() {
+  const f = state.flow;
+  if (f.mode === 'patient') lock(); else go(state.records.some(r => r.pid === f.pid) ? 'patient' : 'home', { flow: null, pid: f.pid });
+}
+function answer(v) {
+  const f = state.flow; if (f.busy) return;
+  const st = f.steps[f.i]; f.ans[st.k][st.idx] = v; f.busy = true; render({ keep: true });
+  setTimeout(() => { f.busy = false; if (state.flow === f) { f.i++; render(); } }, 170);
+}
+async function submitFlow(btn) {
+  const f = state.flow; btn.disabled = true;
+  const ts = f.date === todayStr() ? new Date().toISOString() : new Date(f.date + 'T12:00:00').toISOString();
+  const fix = k => f.ans[k] ? f.ans[k].map(v => Number.isInteger(v) ? v : null) : null;
+  const rec = { id: uuid(), pid: f.pid, ts, phq: fix('phq'), gad: fix('gad'), ses: fix('ses'), src: f.mode };
+  try { await saveRecord(rec); }
+  catch (e) { btn.disabled = false; toast('Speichern fehlgeschlagen: ' + (e && e.message || e)); return; }
+  state.flow = null;
+  if (f.mode === 'patient') lock('thanks', f.pid);
+  else { go('patient', { pid: f.pid }); toast('Messung gespeichert.'); }
+}
+function viewFlow() {
+  const f = state.flow, st = f.steps[f.i];
+  const qSteps = f.steps.filter(x => x.t === 'q'), total = qSteps.length;
+  const cur = f.steps.slice(0, f.i + 1).filter(x => x.t === 'q').length;
+  const pct = st.t === 'intro' ? 0 : st.t === 'review' ? 100 : Math.round((cur - 1) / total * 100);
+  const patient = f.mode === 'patient';
+  const top = h('div', { class: 'flow-top' },
+    f.i > 0 ? h('button', { class: 'btn quiet sm', id: 'flow-back', onclick: () => { if (!f.busy) { f.i--; render(); } } }, '‹ Zurück') : h('span'),
+    h('span', { class: 'sub' }, patient ? '' : `${f.pid} · Papierbogen`),
+    h('button', { class: 'btn quiet sm', id: 'flow-cancel', onclick: async () => {
+      if (await confirmModal('Abbrechen?', patient ? 'Die bisherigen Antworten werden verworfen und die App wird gesperrt.' : 'Die bisherigen Eingaben werden verworfen.', 'Abbrechen und verwerfen', 'danger')) abortFlow();
+    } }, 'Abbrechen'));
+  let main;
+  if (st.t === 'intro') {
+    main = h('div', { class: 'flow-main' },
+      h('h1', { style: { marginBottom: '12px' } }, patient ? 'Kurze Fragen zu Ihrem Befinden' : 'Papierbogen eintragen'),
+      patient
+        ? h('p', { class: 'flow-intro' }, `Bitte beantworten Sie die folgenden ${total} Fragen. Es gibt keine richtigen oder falschen Antworten. Die Antworten helfen, den Verlauf Ihrer Therapie gemeinsam zu besprechen. Das dauert etwa ${Math.max(2, Math.round(total / 5))} Minuten.`)
+        : h('label', { class: 'field' }, h('span', null, 'Datum der Messung'), h('input', { type: 'date', id: 'flow-date', value: f.date, max: todayStr(), onchange: e => { if (e.target.value) f.date = e.target.value; } })),
+      h('div', { class: 'flow-foot' }, h('span'), h('button', { class: 'btn primary', id: 'flow-start', onclick: () => { f.i++; render(); } }, patient ? 'Los geht’s' : 'Weiter')));
+  } else if (st.t === 'q') {
+    const q = Q[st.k], cur2 = f.ans[st.k][st.idx], sec = f.inst.indexOf(st.k) + 1;
+    const mx = q.options[q.options.length - 1].v;
+    main = h('div', { class: 'flow-main' },
+      h('div', { class: 'flow-kicker' }, `Frage ${cur} von ${total}` + (f.inst.length > 1 ? ` · Fragebogen ${sec} von ${f.inst.length}` : '')),
+      h('p', { class: 'flow-intro' }, q.intro),
+      h('h2', { class: 'q-text', id: 'q-text' }, q.items[st.idx]),
+      h('div', { class: 'opts', role: 'group', 'aria-labelledby': 'q-text' }, q.options.map(o => h('button', { class: 'opt', 'aria-pressed': String(cur2 === o.v), 'data-v': String(o.v), onclick: () => answer(o.v) },
+        h('span', { class: 'dots', 'aria-hidden': 'true' }, Array.from({ length: Math.min(mx, 4) }, (_, i) => h('i', { class: (mx <= 4 ? i < o.v : i < Math.round(o.v / mx * 4)) ? 'on' : '' }))),
+        o.l))),
+      h('div', { class: 'flow-foot' }, h('button', { class: 'btn quiet sm', id: 'flow-skip', 'aria-pressed': String(cur2 === null), onclick: () => answer(null) }, cur2 === null ? 'Übersprungen' : 'Überspringen'), h('span')));
+  } else {
+    const skipped = f.inst.reduce((n, k) => n + f.ans[k].filter(v => v === null).length, 0);
+    main = h('div', { class: 'flow-main' },
+      h('h1', { style: { marginBottom: '12px' } }, patient ? 'Alle Fragen beantwortet' : 'Eingaben prüfen und speichern'),
+      h('p', { class: 'flow-intro' }, patient ? 'Mit „Absenden“ werden Ihre Antworten gespeichert.' : `${total} Fragen, ${skipped ? skipped + ' übersprungen' : 'keine übersprungen'}. Datum: ${fmtDate(f.date + 'T12:00:00')}.`),
+      h('div', { class: 'flow-foot' }, h('span'), h('button', { class: 'btn primary', id: 'flow-submit', onclick: e => submitFlow(e.currentTarget) }, patient ? 'Absenden' : 'Speichern')));
+  }
+  return h('div', { class: 'flow' }, h('div', { class: 'prog', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(pct) }, h('i', { style: { width: pct + '%' } })), top, main);
+}
+
+/* ---- Einstellungen ---- */
+function openRestore(replaceWarning) {
+  const file = h('input', { type: 'file', id: 'restore-file', accept: '.json,application/json,text/plain' });
+  const pass = h('input', { type: 'password', id: 'restore-pass', autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' });
+  const err = h('div', { class: 'err', hidden: true, role: 'alert' });
+  modal({ title: 'Backup wiederherstellen', content: h('div', null,
+    replaceWarning ? h('div', { class: 'note' }, 'Alle aktuell gespeicherten Daten auf diesem Gerät werden durch das Backup ersetzt.') : null, err,
+    h('label', { class: 'field' }, h('span', null, 'Backup-Datei'), file),
+    h('label', { class: 'field' }, h('span', null, 'Passphrase des Backups'), pass, h('small', null, 'Es zählt die Passphrase, die beim Erstellen des Backups galt.'))), actions: [
+    { label: 'Abbrechen' },
+    { label: 'Wiederherstellen', kind: 'primary', id: 'restore-ok', run: async () => {
+      err.hidden = true;
+      if (!file.files[0]) { err.textContent = 'Bitte eine Backup-Datei wählen.'; err.hidden = false; return false; }
+      if (!pass.value) { err.textContent = 'Bitte die Passphrase eingeben.'; err.hidden = false; return false; }
+      let text; try { text = await file.files[0].text(); } catch (e) { err.textContent = 'Datei konnte nicht gelesen werden.'; err.hidden = false; return false; }
+      await sleep(30);
+      const r = await importBackup(text, pass.value);
+      if (!r.ok) { err.textContent = r.err; err.hidden = false; return false; }
+      go('home'); toast(`${r.count} Messung${r.count === 1 ? '' : 'en'} wiederhergestellt` + (r.bad ? `, ${r.bad} nicht lesbar.` : '.'));
+    } }] });
+}
+function openChangePass() {
+  const o = passField('cp-old', 'Aktuelle Passphrase', 'current-password', { 'data-autofocus': '1' });
+  const n1 = passField('cp-new', 'Neue Passphrase', 'new-password');
+  const n2 = passField('cp-new2', 'Neue Passphrase wiederholen', 'new-password');
+  const err = h('div', { class: 'err', hidden: true, role: 'alert' });
+  modal({ title: 'Passphrase ändern', content: h('div', null, err, o, n1, n2,
+    h('div', { class: 'note' }, 'Alle Daten werden neu verschlüsselt. Alte Backups bleiben mit der alten Passphrase verschlüsselt, bitte danach ein neues Backup erstellen.')), actions: [
+    { label: 'Abbrechen' },
+    { label: 'Ändern', kind: 'primary', id: 'cp-ok', run: async () => {
+      err.hidden = true;
+      const msg = validatePass($('input', n1).value, $('input', n2).value);
+      if (msg) { err.textContent = msg; err.hidden = false; return false; }
+      await sleep(30);
+      const r = await changePass($('input', o).value, $('input', n1).value);
+      if (r === 'old') { err.textContent = 'Die aktuelle Passphrase stimmt nicht.'; err.hidden = false; return false; }
+      if (r === 'corrupt') { err.textContent = 'Einige Einträge sind nicht lesbar. Bitte zuerst ein Backup erstellen und die Daten prüfen.'; err.hidden = false; return false; }
+      toast('Passphrase geändert. Bitte neues Backup erstellen.');
+    } }] });
+}
+function openWipe() {
+  const input = h('input', { type: 'text', id: 'wipe-input', autocomplete: 'off', autocapitalize: 'characters' });
+  modal({ title: 'Alle Daten löschen', content: h('div', null,
+    h('p', null, 'Löscht alle Messungen und die Einrichtung auf diesem Gerät unwiderruflich. Backups bleiben bestehen.'),
+    h('label', { class: 'field' }, h('span', null, 'Zur Bestätigung LÖSCHEN eintippen'), input)), actions: [
+    { label: 'Abbrechen' },
+    { label: 'Alles löschen', kind: 'danger', id: 'wipe-ok', run: async () => {
+      if (input.value.trim().toUpperCase() !== 'LÖSCHEN') { toast('Bitte LÖSCHEN eintippen.'); return false; }
+      await dbWipe(); LS.del('verlauf.backup');
+      state.key = null; state.meta = null; state.records = []; state.rows = new Map(); state.pid = null;
+      go('setup'); toast('Alles gelöscht.');
+    } }] });
+}
+function viewSettings() {
+  const numField = (label, key, min, max, help) => h('label', { class: 'field' }, h('span', null, label),
+    h('input', { type: 'number', inputmode: 'numeric', min: String(min), max: String(max), value: String(cfg[key]), 'data-key': key,
+      onchange: e => { const v = parseInt(e.target.value, 10); cfg[key] = Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : DEFAULTS[key]; e.target.value = cfg[key]; saveCfg(); } }),
+    help ? h('small', null, help) : null);
+  const qCheck = (k, label, help) => h('label', { class: 'check' }, h('input', { type: 'checkbox', id: 'cfg-' + k, checked: cfg[k] ? true : null,
+    onchange: e => { if (!e.target.checked && !KEYS.filter(x => x !== k).some(x => cfg[x])) { e.target.checked = true; toast('Mindestens ein Fragebogen muss aktiv bleiben.'); return; } cfg[k] = e.target.checked; saveCfg(); } }),
+    h('span', null, label, help ? h('small', null, help) : null));
+  const bk = getBk();
+  const persist = h('span', { class: 'muted' }, '…');
+  if (navigator.storage && navigator.storage.persisted) navigator.storage.persisted().then(p => { persist.textContent = p ? 'ja' : 'nicht bestätigt (Backups umso wichtiger)'; }).catch(() => { persist.textContent = 'unbekannt'; });
+  else persist.textContent = 'unbekannt';
+  return h('div', { class: 'wrap' },
+    h('div', { class: 'top' }, h('button', { class: 'btn', id: 'btn-back', onclick: () => go('home') }, '‹ Übersicht'), h('div', { class: 'grow' }, h('h1', null, 'Einstellungen'))),
+    h('div', { class: 'card' }, h('h2', null, 'Fragebögen'), h('p', { class: 'sub small' }, 'Gilt für jede neue Messung.'),
+      qCheck('phq', 'PHQ-9 (Depression)'), qCheck('gad', 'GAD-7 (Angst)'),
+      qCheck('ses', 'Sitzungsfragen', 'Drei eigene Kurzfragen zu Verstandenwerden, Zielen und Vorgehen. Nicht validiert, nur als Gesprächsanlass gedacht.')),
+    h('div', { class: 'card' }, h('h2', null, 'Sicherheit'),
+      h('label', { class: 'field', style: { marginTop: '10px' } }, h('span', null, 'Automatisch sperren nach'),
+        h('select', { id: 'cfg-idle', onchange: e => { cfg.idleMin = parseInt(e.target.value, 10); saveCfg(); } },
+          [1, 2, 5, 10, 15].map(m => h('option', { value: String(m), selected: cfg.idleMin === m }, m === 1 ? '1 Minute' : m + ' Minuten'))),
+        h('small', null, 'Unabhängig davon sperrt die App nach 60 Sekunden im Hintergrund und nach jeder vom Tablet aus beantworteten Messung.')),
+      h('p', { class: 'small' }, 'Dauerhafter Speicher: ', persist),
+      h('div', { style: { display: 'flex', gap: '10px', flexWrap: 'wrap' } }, h('button', { class: 'btn', id: 'btn-changepass', onclick: openChangePass }, 'Passphrase ändern'))),
+    h('div', { class: 'card' }, h('h2', null, 'Hinweis-Schwellen'),
+      h('p', { class: 'sub small' }, 'Diese Werte steuern nur die automatischen Hinweise. Die Voreinstellungen stammen aus der Erinnerung des Entwicklers und sollten Sie anhand der Originalliteratur prüfen und anpassen.'),
+      numField('Bedeutsame Veränderung PHQ-9 (Punkte)', 'phqChange', 1, 27),
+      numField('Bedeutsame Veränderung GAD-7 (Punkte)', 'gadChange', 1, 21),
+      numField('Relevanter Ausgangswert (Punkte)', 'relevant', 1, 27, 'Der Hinweis „keine Besserung“ erscheint nur, wenn die erste Messung mindestens so hoch war.'),
+      numField('Messungen bis zum Hinweis „keine Besserung“', 'minN', 2, 50),
+      numField('Oder Wochen seit der ersten Messung', 'weeks', 1, 104)),
+    h('div', { class: 'card' }, h('h2', null, 'Backup'),
+      h('p', { class: 'sub small' }, bk.at ? `Letztes Backup: ${fmtDate(bk.at)}, seitdem ${bk.changes} Änderung${bk.changes === 1 ? '' : 'en'}.` : 'Noch kein Backup erstellt.'),
+      h('p', { class: 'small' }, 'Die Backup-Datei ist mit Ihrer Passphrase verschlüsselt. Speichern Sie sie z. B. in der Dateien-App oder auf einem Praxisrechner.'),
+      h('div', { style: { display: 'flex', gap: '10px', flexWrap: 'wrap' } },
+        h('button', { class: 'btn primary', id: 'btn-export', onclick: exportBackup }, 'Backup erstellen'),
+        h('button', { class: 'btn', id: 'btn-restore', onclick: () => openRestore(true) }, 'Backup wiederherstellen'))),
+    h('div', { class: 'card' }, h('h2', null, 'Daten löschen'),
+      h('p', { class: 'small' }, 'Entfernt alle Messungen und die Einrichtung von diesem Gerät.'),
+      h('button', { class: 'btn danger', id: 'btn-wipe', onclick: openWipe }, 'Alle Daten löschen')),
+    h('div', { class: 'card' }, h('h2', null, 'Über diese App'),
+      h('p', { class: 'small' }, `Version ${VERSION}. Läuft ohne Server: Die Daten verlassen dieses Gerät nur, wenn Sie selbst ein Backup exportieren.`),
+      h('p', { class: 'small' }, 'Kein Medizinprodukt. Die Hinweise ersetzen keine klinische Einschätzung. Fragetexte bitte mit der offiziellen deutschen Fassung abgleichen.')));
+}
+
+/* ===================== Start ===================== */
+const ACTIVITY = ['pointerdown', 'keydown', 'touchstart', 'wheel', 'scroll'];
+ACTIVITY.forEach(ev => addEventListener(ev, () => { lastAct = Date.now(); }, { passive: true, capture: true }));
+setInterval(() => {
+  if (!state.key) return;
+  const lim = state.view === 'flow' ? FLOW_IDLE_MS : cfg.idleMin * 60 * 1000;
+  if (Date.now() - lastAct > lim) lock('timeout');
+}, 5000);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) hiddenAt = Date.now();
+  else {
+    if (state.key && hiddenAt && Date.now() - hiddenAt > HIDDEN_LOCK_MS) lock('timeout');
+    hiddenAt = null; lastAct = Date.now();
+  }
+});
+
+async function boot() {
+  loadCfg();
+  if (!window.isSecureContext || !window.crypto || !crypto.subtle) { state.fatal = 'Verschlüsselung ist in diesem Browser-Kontext nicht verfügbar. Die App muss über https geöffnet werden.'; return go('fatal'); }
+  if (!window.indexedDB) { state.fatal = 'Dieser Browser bietet keinen lokalen Speicher (IndexedDB). Ein privates Fenster kann die Ursache sein.'; return go('fatal'); }
+  try { db = await openDB(); } catch (e) { state.fatal = 'Der lokale Speicher konnte nicht geöffnet werden: ' + (e && e.message || e); return go('fatal'); }
+  let meta = null;
+  try { meta = await dbGetMeta(); } catch (e) { /* leer */ }
+  go(meta ? 'lock' : 'setup');
+  if ('serviceWorker' in navigator) {
+    const had = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.register('sw.js').catch(() => { /* ohne Offline-Cache weiter */ });
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (had) toast('App aktualisiert. Beim nächsten Start aktiv.'); });
+  }
+}
+window.__pm = { Q, DEFAULTS, recScore, bandOf, analyze, normPid, VERSION };
+boot();
+})();
+</script>
+</body>
+</html>
