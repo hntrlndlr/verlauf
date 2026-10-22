@@ -1,5 +1,5 @@
 // Offline-Cache für die Verlauf-App. Enthält nur Programmcode, niemals Patientendaten.
-const CACHE = 'verlauf-v1.0.0';
+const CACHE = 'verlauf-v1.1.0';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

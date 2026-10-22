@@ -1,4 +1,4 @@
-# Verlauf: PHQ-9 und GAD-7 pro Sitzung (iPad, offline, verschlüsselt)
+# Verlauf: PHQ-9, GAD-7 und WAI-SR (iPad, offline, verschlüsselt), Version 1.1.0
 
 Eine kleine Web-App ohne Server. Sie läuft im Safari des iPads, speichert alles verschlüsselt im Browser-Speicher des Geräts und zeigt pro Kennung den Verlauf mit Hinweisen.
 
@@ -24,6 +24,15 @@ Eine kleine Web-App ohne Server. Sie läuft im Safari des iPads, speichert alles
 3. Du entsperrst mit der Passphrase und landest direkt im Verlauf dieser Kennung.
 4. **Papierbogen eintragen** erfasst eine Messung nachträglich mit frei wählbarem Datum.
 
+## WAI-SR (Arbeitsbeziehung)
+
+- **Standardmäßig aus.** Einschalten unter Einstellungen, Fragebögen.
+- **Intervall:** Einstellbar, bei jeder n-ten Messung einer Kennung (Voreinstellung 4, also bei der 4., 8., 12. Messung). Mit 1 wird bei jeder Messung gefragt.
+- **Ablauf:** Zuerst die Anleitung im Originalwortlaut, dann die 12 Aussagen mit den Stufen 1 (selten) bis 5 (immer). Die Texte stammen aus der deutschen Kurzform (Patientenversion), die du mir geschickt hast.
+- **Auswertung:** Gesamtwert 12 bis 60 und Teilskalen Bindung, Aufgaben, Ziele (je 4 bis 20), als Verlauf und in der Tabelle. Es gibt bewusst **keine automatischen Warnhinweise**, weil ich keine belegten Grenzwerte kenne.
+- **Zuordnung der Teilskalen** (Bindung: 3, 5, 7, 9. Aufgaben: 1, 2, 10, 12. Ziele: 4, 6, 8, 11) habe ich aus dem Inhalt der Aussagen und meiner Erinnerung abgeleitet. Gleiche sie mit der Auswertungsanleitung des Instruments ab. Sie steht im Skript im Block `Q.wai.subs`.
+- **Rechte:** Der Wortlaut der Aussagen liegt dann im Programmcode. Bei einer öffentlichen Seite (z. B. GitHub Pages) kann ihn jeder lesen, der die Adresse kennt. Kläre mit den Rechteinhabern, ob deine Erlaubnis das abdeckt.
+
 ## Datenschutz, kurz
 
 - Pseudonymisiert ist nicht anonym: Die Daten bleiben personenbezogene Gesundheitsdaten im Sinne der DSGVO (Art. 9). Die Zuordnung Kennung zu Person gehört ausschließlich in deine Patientenakte.
@@ -42,7 +51,7 @@ Eine kleine Web-App ohne Server. Sie läuft im Safari des iPads, speichert alles
 
 - **Fragetexte** (PHQ-9, GAD-7) stammen aus der Erinnerung des Entwicklers. Gleiche sie mit der offiziellen deutschen Fassung ab, z. B. unter phqscreeners.com. Die Texte stehen oben im Skript im Block `Q`.
 - **Schwellenwerte** für die Hinweise (Voreinstellung: 5 Punkte PHQ-9, 4 Punkte GAD-7, Ausgangswert ab 10, nach 5 Messungen oder 8 Wochen) sind Orientierungswerte aus der Erinnerung. Prüfe sie anhand der Originalliteratur und passe sie in den Einstellungen an.
-- **Sitzungsfragen** (optional, standardmäßig aus) sind drei eigene, nicht validierte Kurzfragen. Als validierte Allianzmaße kommen z. B. WAI-SR oder SRS infrage, beachte dort die Lizenzbedingungen.
+- **Sitzungsfragen** (optional, standardmäßig aus) sind drei eigene, nicht validierte Kurzfragen, gedacht als Gesprächsanlass zwischen den WAI-SR-Messungen.
 - Die Hinweise sind Entscheidungshilfen, kein Befund und kein Medizinprodukt.
 
 ## Grenzen

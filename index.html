@@ -26,7 +26,7 @@
   --crit:#d03b3b; --crit-bg:#fdeceb; --crit-ink:#8a1c1c;
   --warn:#e0a100; --warn-bg:#fff4d9; --warn-ink:#6b4300;
   --good-bg:#e7f3e7; --good-ink:#006300;
-  --s-phq:#2a78d6; --s-gad:#eb6834;
+  --s-phq:#2a78d6; --s-gad:#eb6834; --s-wai:#1baf7a;
   --band:#f0efec; --grid:#e1e0d9; --axis:#c3c2b7;
 }
 @media (prefers-color-scheme: dark){
@@ -37,7 +37,7 @@
     --crit:#d03b3b; --crit-bg:#3a1c1c; --crit-ink:#ffb0ac;
     --warn:#fab219; --warn-bg:#3a2f10; --warn-ink:#f6cf72;
     --good-bg:#12301a; --good-ink:#7bd47b;
-    --s-phq:#3987e5; --s-gad:#d95926;
+    --s-phq:#3987e5; --s-gad:#d95926; --s-wai:#199e70;
     --band:#222221; --grid:#2c2c2a; --axis:#383835;
   }
 }
@@ -111,8 +111,8 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent);flex:none
 .grid{stroke:var(--grid);stroke-width:1} .axis{stroke:var(--axis);stroke-width:1.5}
 .ax-y,.ax-x,.ax-band{fill:var(--muted);font:11.5px var(--sans)}
 .val{fill:var(--ink);font:600 13px var(--sans)}
-.line-phq{stroke:var(--s-phq)} .line-gad{stroke:var(--s-gad)}
-.pt-phq{fill:var(--s-phq)} .pt-gad{fill:var(--s-gad)}
+.line-phq{stroke:var(--s-phq)} .line-gad{stroke:var(--s-gad)} .line-wai{stroke:var(--s-wai)}
+.pt-phq{fill:var(--s-phq)} .pt-gad{fill:var(--s-gad)} .pt-wai{fill:var(--s-wai)}
 .pt{stroke:var(--surface);stroke-width:2}
 .ring{fill:none;stroke:var(--crit);stroke-width:2}
 .guide{stroke:var(--line2);stroke-width:1;stroke-dasharray:3 3}
@@ -171,7 +171,7 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:28px 0}
 (() => {
 'use strict';
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 const DB_NAME = 'verlauf-fragebogen';
 const KDF_ITER = 600000;
 const MIN_PASS = 10;
@@ -219,6 +219,31 @@ const Q = {
     ],
     bands: [[0, 'minimal'], [5, 'leicht'], [10, 'mittelschwer'], [15, 'schwer']]
   },
+  wai: {
+    key: 'wai', short: 'WAI-SR', name: 'Arbeitsbeziehung (Allianz)', min: 12, max: 60,
+    instr: 'Im folgenden finden Sie eine Reihe von Aussagen, die sich auf Erfahrungen beziehen, die Menschen in ihrer Therapie oder mit ihrer/ihrem Therapeut/in machen können. Bitte entscheiden Sie bei jeder Aussage, inwieweit sie auf ihre Therapie zur Zeit zutrifft. Beurteilen Sie dies auf fünf Stufen von 1 = \u201eselten\u201c bis 5 = \u201eimmer\u201c.',
+    intro: 'Bitte entscheiden Sie, inwieweit die Aussage auf Ihre Therapie zur Zeit zutrifft.',
+    options: [
+      { v: 1, l: 'Selten' }, { v: 2, l: 'Manchmal' }, { v: 3, l: 'Öfters' }, { v: 4, l: 'Sehr oft' }, { v: 5, l: 'Immer' }
+    ],
+    items: [
+      'Durch die Therapiestunden ist mir klarer geworden, wie ich mich verändern kann.',
+      'Was ich in der Therapie mache, eröffnet mir neue Sichtweisen auf mein Problem.',
+      'Ich glaube mein/e Therapeut/in mag mich.',
+      'Mein/e Therapeut/in und ich arbeiten gemeinsam daran, Therapieziele zu setzen.',
+      'Mein/e Therapeut/in und ich achten einander.',
+      'Mein/e Therapeut/in und ich arbeiten auf Ziele hin über die wir uns einig sind.',
+      'Ich spüre, dass mein/e Therapeut/in mich schätzt.',
+      'Mein/e Therapeut/in und ich stimmen überein, woran es für mich wichtig ist zu arbeiten.',
+      'Ich spüre, dass mein/e Therapeut/in auch dann zu mir steht, wenn ich etwas tue, was er/sie nicht gutheißt.',
+      'Ich spüre, dass das, was ich in der Therapie tue, mir helfen wird, die von mir gewünschten Veränderungen zu erreichen.',
+      'Mein/e Therapeut/in und ich sind uns im Klaren darüber, welche Veränderungen gut für mich wären.',
+      'Ich glaube, dass es richtig ist, wie wir an meinem Problem arbeiten.'
+    ],
+    bands: [],
+    ticks: [12, 24, 36, 48, 60],
+    subs: { Bindung: [3, 5, 7, 9], Aufgaben: [1, 2, 10, 12], Ziele: [4, 6, 8, 11] }
+  },
   ses: {
     key: 'ses', short: 'Sitzungsfragen', name: 'Sitzungsfragen (eigene Kurzfragen, nicht validiert)', max: 12,
     intro: 'Bitte denken Sie an die heutige Sitzung. Wie sehr treffen die folgenden Aussagen zu?',
@@ -234,7 +259,7 @@ const Q = {
     bands: []
   }
 };
-const KEYS = ['phq', 'gad', 'ses'];
+const KEYS = ['phq', 'gad', 'wai', 'ses'];
 
 /* ===================== Hilfsfunktionen ===================== */
 const $ = (s, r = document) => r.querySelector(s);
@@ -303,7 +328,7 @@ const LS = {
 };
 
 /* ===================== Einstellungen & Backup-Info ===================== */
-const DEFAULTS = { idleMin: 5, phq: true, gad: true, ses: false, phqChange: 5, gadChange: 4, relevant: 10, minN: 5, weeks: 8 };
+const DEFAULTS = { idleMin: 5, phq: true, gad: true, wai: false, waiEvery: 4, ses: false, phqChange: 5, gadChange: 4, relevant: 10, minN: 5, weeks: 8 };
 const cfg = Object.assign({}, DEFAULTS);
 function loadCfg() {
   try {
@@ -326,6 +351,13 @@ function recScore(rec, k) {
   let sum = 0;
   for (const v of a) { if (!Number.isInteger(v)) return null; sum += v; }
   return sum;
+}
+function subScores(rec, k) {
+  const q = Q[k];
+  if (!q.subs || recScore(rec, k) === null) return null;
+  const out = {};
+  for (const [name, idxs] of Object.entries(q.subs)) out[name] = idxs.reduce((a, i) => a + rec[k][i - 1], 0);
+  return out;
 }
 function bandOf(k, score) {
   let name = '';
@@ -435,16 +467,16 @@ async function unseal(key, sealed, aad) {
   return JSON.parse(td.decode(pt));
 }
 const CHECK_TEXT = 'verlauf-ok';
-function recPayload(r) { return { pid: r.pid, ts: r.ts, phq: r.phq, gad: r.gad, ses: r.ses, src: r.src }; }
+function recPayload(r) { return { pid: r.pid, ts: r.ts, phq: r.phq, gad: r.gad, wai: r.wai, ses: r.ses, src: r.src }; }
 function normArr(a, k) {
   const q = Q[k];
   if (!Array.isArray(a) || a.length !== q.items.length) return null;
-  const mx = q.options[q.options.length - 1].v;
-  return a.map(v => (Number.isInteger(v) && v >= 0 && v <= mx) ? v : null);
+  const mn = q.options[0].v, mx = q.options[q.options.length - 1].v;
+  return a.map(v => (Number.isInteger(v) && v >= mn && v <= mx) ? v : null);
 }
 function normalizeRecord(o, id) {
   if (!o || typeof o.pid !== 'string' || !o.pid || isNaN(Date.parse(o.ts))) return null;
-  return { id, pid: o.pid, ts: new Date(o.ts).toISOString(), phq: normArr(o.phq, 'phq'), gad: normArr(o.gad, 'gad'), ses: normArr(o.ses, 'ses'), src: o.src === 'patient' ? 'patient' : 'therapist' };
+  return { id, pid: o.pid, ts: new Date(o.ts).toISOString(), phq: normArr(o.phq, 'phq'), gad: normArr(o.gad, 'gad'), wai: normArr(o.wai, 'wai'), ses: normArr(o.ses, 'ses'), src: o.src === 'patient' ? 'patient' : 'therapist' };
 }
 const sortRecs = a => a.sort((x, y) => (Date.parse(x.ts) - Date.parse(y.ts)) || (x.id < y.id ? -1 : 1));
 
@@ -620,20 +652,20 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#modal-
 /* ===================== Diagramm ===================== */
 function chartEl(k, pts) {
   const q = Q[k], W = 760, H = 250, L = 38, R = 96, T = 18, B = 34;
-  const pw = W - L - R, ph = H - T - B, max = q.max, n = pts.length;
-  const Y = v => T + ph - (v / max) * ph;
+  const pw = W - L - R, ph = H - T - B, max = q.max, min = q.min || 0, n = pts.length;
+  const Y = v => T + ph - ((v - min) / (max - min)) * ph;
   const X = i => n === 1 ? L + pw / 2 : L + 24 + (pw - 48) * i / (n - 1);
   const first = pts[0].score, last = pts[n - 1].score;
   const wrap = h('div', { class: 'chart' });
   const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, class: 'chart-svg', role: 'group',
-    'aria-label': `${q.short}-Verlauf: ${n} Messung${n === 1 ? '' : 'en'}, zuletzt ${last} Punkte (${bandOf(k, last)}). Die Werte stehen auch in der Tabelle darunter.` });
+    'aria-label': `${q.short}-Verlauf: ${n} Messung${n === 1 ? '' : 'en'}, zuletzt ${last} Punkte${bandOf(k, last) ? ' (' + bandOf(k, last) + ')' : ''}. Die Werte stehen auch in der Tabelle darunter.` });
   q.bands.forEach((b, i) => {
     const lo = b[0], hi = i + 1 < q.bands.length ? q.bands[i + 1][0] : max;
     svg.append(s('rect', { x: L, y: Y(hi), width: pw, height: Y(lo) - Y(hi), class: i % 2 ? 'band-b' : 'band-a' }));
     svg.append(s('text', { x: L + pw + 10, y: (Y(lo) + Y(hi)) / 2 + 4, class: 'ax-band' }, b[1]));
   });
-  q.bands.map(b => b[0]).concat([max]).forEach(t => {
-    svg.append(s('line', { x1: L, x2: L + pw, y1: Y(t), y2: Y(t), class: t === 0 ? 'axis' : 'grid' }));
+  (q.ticks || q.bands.map(b => b[0]).concat([max])).forEach(t => {
+    svg.append(s('line', { x1: L, x2: L + pw, y1: Y(t), y2: Y(t), class: t === min ? 'axis' : 'grid' }));
     svg.append(s('text', { x: L - 8, y: Y(t) + 4, class: 'ax-y', 'text-anchor': 'end' }, String(t)));
   });
   const step = Math.max(1, Math.ceil(n / Math.max(1, Math.floor(pw / 62))));
@@ -653,7 +685,7 @@ function chartEl(k, pts) {
   const showTip = i => {
     const p = pts[i];
     guide.setAttribute('x1', X(i)); guide.setAttribute('x2', X(i)); guide.setAttribute('visibility', 'visible');
-    tip.textContent = `${fmtDate(p.ts)} · ${q.short} ${p.score} (${bandOf(k, p.score)})${flagged[i] ? ' · Frage 9 positiv' : ''}`;
+    tip.textContent = `${fmtDate(p.ts)} · ${q.short} ${p.score}${bandOf(k, p.score) ? ' (' + bandOf(k, p.score) + ')' : ''}${flagged[i] ? ' · Frage 9 positiv' : ''}`;
     tip.hidden = false;
     const r = svg.getBoundingClientRect(), sc = r.width / W;
     const w = tip.offsetWidth || 160;
@@ -663,7 +695,7 @@ function chartEl(k, pts) {
   const hideTip = () => { tip.hidden = true; guide.setAttribute('visibility', 'hidden'); };
   pts.forEach((p, i) => {
     svg.append(s('circle', { cx: X(i), cy: Y(p.score), r: 22, class: 'hit', tabindex: '0', role: 'img',
-      'aria-label': `${fmtDate(p.ts)}: ${q.short} ${p.score}, ${bandOf(k, p.score)}${flagged[i] ? ', Frage 9 positiv' : ''}`,
+      'aria-label': `${fmtDate(p.ts)}: ${q.short} ${p.score}${bandOf(k, p.score) ? ', ' + bandOf(k, p.score) : ''}${flagged[i] ? ', Frage 9 positiv' : ''}`,
       onpointerenter: () => showTip(i), onclick: () => showTip(i), onfocus: () => showTip(i),
       onpointerleave: ev => { if (ev.pointerType === 'mouse') hideTip(); }, onblur: hideTip }));
   });
@@ -867,10 +899,12 @@ function viewPatient() {
     h('div', { class: 'flags' }, a.flags.map(f => h('div', { class: 'flag' },
       h('span', { class: 'badge ' + (f.level === 'critical' ? 'crit' : f.level) }, h('b', { 'aria-hidden': 'true' }, { critical: '!', warn: '▲', info: 'i', good: '✓' }[f.level]), { critical: 'Wichtig', warn: 'Hinweis', info: 'Info', good: 'Positiv' }[f.level]),
       h('p', null, f.text))))) : null;
-  const cards = ['phq', 'gad'].filter(k => a.series[k].length).map(k => {
-    const ser = a.series[k], last = ser[ser.length - 1].score, base = ser[0].score, prev = ser.length > 1 ? ser[ser.length - 2].score : null;
+  const sers = { phq: a.series.phq, gad: a.series.gad, wai: recs.filter(r => recScore(r, 'wai') !== null).map(r => ({ rec: r, score: recScore(r, 'wai'), ts: r.ts })) };
+  const cards = ['phq', 'gad', 'wai'].filter(k => sers[k].length).map(k => {
+    const ser = sers[k], last = ser[ser.length - 1].score, base = ser[0].score, prev = ser.length > 1 ? ser[ser.length - 2].score : null;
     return h('div', { class: 'card' }, h('h2', null, `${Q[k].short} · ${Q[k].name}`),
-      h('div', { class: 'stat' }, h('span', { class: 'big' }, String(last)), h('span', null, bandOf(k, last)),
+      h('div', { class: 'stat' }, h('span', { class: 'big' }, String(last)), bandOf(k, last) ? h('span', null, bandOf(k, last)) : h('span', null, `von ${Q[k].min} bis ${Q[k].max}`),
+        k === 'wai' ? h('span', null, Object.entries(subScores(ser[ser.length - 1].rec, 'wai')).map(([nm, v]) => `${nm} ${v} von 20`).join(' · ')) : null,
         ser.length > 1 ? h('span', null, `${signed(last - base)} seit Beginn`) : null,
         prev !== null ? h('span', null, `${signed(last - prev)} zur letzten Messung`) : null),
       chartEl(k, ser));
@@ -880,14 +914,17 @@ function viewPatient() {
     return h('td', { class: 'num' }, r[k] === null ? '–' : sc === null ? 'unvollständig' : `${sc} (${bandOf(k, sc)})`);
   };
   const useSes = recs.some(r => r.ses);
+  const useWai = recs.some(r => r.wai);
   const table = h('table', { class: 'tbl' },
-    h('thead', null, h('tr', null, h('th', null, 'Datum'), h('th', null, 'PHQ-9'), h('th', null, 'GAD-7'), h('th', null, 'Frage 9'), useSes ? h('th', null, 'Sitzungsfragen') : null, h('th', null, h('span', { class: 'sr', style: { position: 'absolute', left: '-9999px' } }, 'Aktionen')))),
+    h('thead', null, h('tr', null, h('th', null, 'Datum'), h('th', null, 'PHQ-9'), h('th', null, 'GAD-7'), h('th', null, 'Frage 9'), useWai ? h('th', null, 'WAI-SR') : null, useSes ? h('th', null, 'Sitzungsfragen') : null, h('th', null, h('span', { class: 'sr', style: { position: 'absolute', left: '-9999px' } }, 'Aktionen')))),
     h('tbody', null, recs.slice().reverse().map(r => {
       const v9 = r.phq ? r.phq[8] : null;
       const ses = recScore(r, 'ses');
+      const wsc = recScore(r, 'wai');
       return h('tr', null, h('td', null, fmtDate(r.ts), r.src === 'therapist' ? h('span', { class: 'muted small' }, ' (Papier)') : null),
         scoreCell(r, 'phq'), scoreCell(r, 'gad'),
         h('td', { class: v9 > 0 ? 'q9' : '' }, !r.phq ? '–' : v9 === null ? 'offen' : v9 > 0 ? `! ${FREQ[v9].l}` : 'nein'),
+        useWai ? h('td', { class: 'num' }, !r.wai ? '\u2013' : wsc === null ? 'unvollständig' : String(wsc)) : null,
         useSes ? h('td', { class: 'num' }, !r.ses ? '–' : ses === null ? 'unvollständig' : `${ses} von ${Q.ses.max}`) : null,
         h('td', null, h('button', { class: 'btn quiet sm', 'aria-label': `Messung vom ${fmtDate(r.ts)} löschen`, onclick: async () => {
           if (await confirmModal('Messung löschen?', `Die Messung vom ${fmtDate(r.ts)} wird dauerhaft gelöscht.`, 'Löschen', 'danger')) { await deleteRecords([r.id]); render({ keep: true }); toast('Messung gelöscht.'); }
@@ -926,10 +963,12 @@ function openRename(oldPid) {
 
 /* ---- Fragebogen-Ablauf ---- */
 function startFlow(pid, mode) {
-  const inst = KEYS.filter(k => cfg[k]);
+  const prevCount = state.records.filter(r => r.pid === pid).length;
+  const waiDue = cfg.wai && (prevCount + 1) % Math.max(1, cfg.waiEvery) === 0;
+  const inst = KEYS.filter(k => k === 'wai' ? waiDue : cfg[k]);
   if (!inst.length) { toast('Es ist kein Fragebogen aktiviert (Einstellungen).'); return; }
   const steps = [{ t: 'intro' }];
-  inst.forEach(k => Q[k].items.forEach((_, idx) => steps.push({ t: 'q', k, idx })));
+  inst.forEach(k => { if (Q[k].instr) steps.push({ t: 'instr', k }); Q[k].items.forEach((_, idx) => steps.push({ t: 'q', k, idx })); });
   steps.push({ t: 'review' });
   const ans = {}; inst.forEach(k => { ans[k] = new Array(Q[k].items.length).fill(undefined); });
   closeModal();
@@ -948,7 +987,7 @@ async function submitFlow(btn) {
   const f = state.flow; btn.disabled = true;
   const ts = f.date === todayStr() ? new Date().toISOString() : new Date(f.date + 'T12:00:00').toISOString();
   const fix = k => f.ans[k] ? f.ans[k].map(v => Number.isInteger(v) ? v : null) : null;
-  const rec = { id: uuid(), pid: f.pid, ts, phq: fix('phq'), gad: fix('gad'), ses: fix('ses'), src: f.mode };
+  const rec = { id: uuid(), pid: f.pid, ts, phq: fix('phq'), gad: fix('gad'), wai: fix('wai'), ses: fix('ses'), src: f.mode };
   try { await saveRecord(rec); }
   catch (e) { btn.disabled = false; toast('Speichern fehlgeschlagen: ' + (e && e.message || e)); return; }
   state.flow = null;
@@ -959,7 +998,7 @@ function viewFlow() {
   const f = state.flow, st = f.steps[f.i];
   const qSteps = f.steps.filter(x => x.t === 'q'), total = qSteps.length;
   const cur = f.steps.slice(0, f.i + 1).filter(x => x.t === 'q').length;
-  const pct = st.t === 'intro' ? 0 : st.t === 'review' ? 100 : Math.round((cur - 1) / total * 100);
+  const pct = st.t === 'intro' ? 0 : st.t === 'review' ? 100 : Math.max(0, Math.round((st.t === 'q' ? cur - 1 : cur) / total * 100));
   const patient = f.mode === 'patient';
   const top = h('div', { class: 'flow-top' },
     f.i > 0 ? h('button', { class: 'btn quiet sm', id: 'flow-back', onclick: () => { if (!f.busy) { f.i--; render(); } } }, '‹ Zurück') : h('span'),
@@ -975,15 +1014,21 @@ function viewFlow() {
         ? h('p', { class: 'flow-intro' }, `Bitte beantworten Sie die folgenden ${total} Fragen. Es gibt keine richtigen oder falschen Antworten. Die Antworten helfen, den Verlauf Ihrer Therapie gemeinsam zu besprechen. Das dauert etwa ${Math.max(2, Math.round(total / 5))} Minuten.`)
         : h('label', { class: 'field' }, h('span', null, 'Datum der Messung'), h('input', { type: 'date', id: 'flow-date', value: f.date, max: todayStr(), onchange: e => { if (e.target.value) f.date = e.target.value; } })),
       h('div', { class: 'flow-foot' }, h('span'), h('button', { class: 'btn primary', id: 'flow-start', onclick: () => { f.i++; render(); } }, patient ? 'Los geht’s' : 'Weiter')));
+  } else if (st.t === 'instr') {
+    const q = Q[st.k], sec = f.inst.indexOf(st.k) + 1;
+    main = h('div', { class: 'flow-main' },
+      h('div', { class: 'flow-kicker' }, f.inst.length > 1 ? `Fragebogen ${sec} von ${f.inst.length}` : 'Fragebogen'),
+      h('h2', { class: 'q-text' }, 'Anleitung'),
+      h('p', { class: 'flow-intro', id: 'instr-text', style: { fontSize: '19px' } }, q.instr),
+      h('div', { class: 'flow-foot' }, h('span'), h('button', { class: 'btn primary', id: 'flow-next', onclick: () => { f.i++; render(); } }, 'Weiter')));
   } else if (st.t === 'q') {
     const q = Q[st.k], cur2 = f.ans[st.k][st.idx], sec = f.inst.indexOf(st.k) + 1;
-    const mx = q.options[q.options.length - 1].v;
     main = h('div', { class: 'flow-main' },
       h('div', { class: 'flow-kicker' }, `Frage ${cur} von ${total}` + (f.inst.length > 1 ? ` · Fragebogen ${sec} von ${f.inst.length}` : '')),
       h('p', { class: 'flow-intro' }, q.intro),
       h('h2', { class: 'q-text', id: 'q-text' }, q.items[st.idx]),
-      h('div', { class: 'opts', role: 'group', 'aria-labelledby': 'q-text' }, q.options.map(o => h('button', { class: 'opt', 'aria-pressed': String(cur2 === o.v), 'data-v': String(o.v), onclick: () => answer(o.v) },
-        h('span', { class: 'dots', 'aria-hidden': 'true' }, Array.from({ length: Math.min(mx, 4) }, (_, i) => h('i', { class: (mx <= 4 ? i < o.v : i < Math.round(o.v / mx * 4)) ? 'on' : '' }))),
+      h('div', { class: 'opts', role: 'group', 'aria-labelledby': 'q-text' }, q.options.map((o, oi) => h('button', { class: 'opt', 'aria-pressed': String(cur2 === o.v), 'data-v': String(o.v), onclick: () => answer(o.v) },
+        h('span', { class: 'dots', 'aria-hidden': 'true' }, Array.from({ length: q.options.length - 1 }, (_, i) => h('i', { class: i < oi ? 'on' : '' }))),
         o.l))),
       h('div', { class: 'flow-foot' }, h('button', { class: 'btn quiet sm', id: 'flow-skip', 'aria-pressed': String(cur2 === null), onclick: () => answer(null) }, cur2 === null ? 'Übersprungen' : 'Überspringen'), h('span')));
   } else {
@@ -1055,7 +1100,7 @@ function viewSettings() {
       onchange: e => { const v = parseInt(e.target.value, 10); cfg[key] = Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : DEFAULTS[key]; e.target.value = cfg[key]; saveCfg(); } }),
     help ? h('small', null, help) : null);
   const qCheck = (k, label, help) => h('label', { class: 'check' }, h('input', { type: 'checkbox', id: 'cfg-' + k, checked: cfg[k] ? true : null,
-    onchange: e => { if (!e.target.checked && !KEYS.filter(x => x !== k).some(x => cfg[x])) { e.target.checked = true; toast('Mindestens ein Fragebogen muss aktiv bleiben.'); return; } cfg[k] = e.target.checked; saveCfg(); } }),
+    onchange: e => { if (!e.target.checked && k !== 'wai' && !['phq', 'gad', 'ses'].filter(x => x !== k).some(x => cfg[x])) { e.target.checked = true; toast('Mindestens ein Fragebogen muss aktiv bleiben.'); return; } cfg[k] = e.target.checked; saveCfg(); } }),
     h('span', null, label, help ? h('small', null, help) : null));
   const bk = getBk();
   const persist = h('span', { class: 'muted' }, '…');
@@ -1065,6 +1110,8 @@ function viewSettings() {
     h('div', { class: 'top' }, h('button', { class: 'btn', id: 'btn-back', onclick: () => go('home') }, '‹ Übersicht'), h('div', { class: 'grow' }, h('h1', null, 'Einstellungen'))),
     h('div', { class: 'card' }, h('h2', null, 'Fragebögen'), h('p', { class: 'sub small' }, 'Gilt für jede neue Messung.'),
       qCheck('phq', 'PHQ-9 (Depression)'), qCheck('gad', 'GAD-7 (Angst)'),
+      qCheck('wai', 'WAI-SR (Arbeitsbeziehung)', '12 Aussagen, deutsche revidierte Kurzform (Patientenversion). Wird nicht in jeder Sitzung abgefragt, siehe unten.'),
+      numField('WAI-SR bei jeder n-ten Messung', 'waiEvery', 1, 20, '1 = bei jeder Messung. Die erste Erfassung erfolgt bei der n-ten Messung einer Kennung.'),
       qCheck('ses', 'Sitzungsfragen', 'Drei eigene Kurzfragen zu Verstandenwerden, Zielen und Vorgehen. Nicht validiert, nur als Gesprächsanlass gedacht.')),
     h('div', { class: 'card' }, h('h2', null, 'Sicherheit'),
       h('label', { class: 'field', style: { marginTop: '10px' } }, h('span', null, 'Automatisch sperren nach'),
@@ -1091,6 +1138,7 @@ function viewSettings() {
       h('button', { class: 'btn danger', id: 'btn-wipe', onclick: openWipe }, 'Alle Daten löschen')),
     h('div', { class: 'card' }, h('h2', null, 'Über diese App'),
       h('p', { class: 'small' }, `Version ${VERSION}. Läuft ohne Server: Die Daten verlassen dieses Gerät nur, wenn Sie selbst ein Backup exportieren.`),
+      h('p', { class: 'small' }, 'WAI-SR: deutsche revidierte Kurzform (Patientenversion). Die Rechte liegen bei den Urhebern. Bitte nutzen Sie die Fragen nur im Rahmen der erteilten Erlaubnis.'),
       h('p', { class: 'small' }, 'Kein Medizinprodukt. Die Hinweise ersetzen keine klinische Einschätzung. Fragetexte bitte mit der offiziellen deutschen Fassung abgleichen.')));
 }
 
@@ -1124,7 +1172,7 @@ async function boot() {
     navigator.serviceWorker.addEventListener('controllerchange', () => { if (had) toast('App aktualisiert. Beim nächsten Start aktiv.'); });
   }
 }
-window.__pm = { Q, DEFAULTS, recScore, bandOf, analyze, normPid, VERSION };
+window.__pm = { Q, DEFAULTS, recScore, subScores, bandOf, analyze, normPid, normalizeRecord, VERSION };
 boot();
 })();
 </script>
